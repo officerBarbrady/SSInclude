@@ -23,33 +23,33 @@ No changes needed
  
 { players.simba }
  
-SKILL_DIVINATION needs to be removed from constants
- __LOGIN_COLOR_TEXT needs to be changed
-Username and password boxes need to be changed
-loggedInReference needs to be changed
-TPlayer record nees to have displayname, nickname, securelogin deleted
-disableIPScreenshots needs to be removed
-isLoggedIn needs to be deleted (just need to find report button color)
-__setInputBoxes() is not needed
-__enterLoginInf to be changed, on logout you do not need to re-enter details
-__secureEnterInfo to be deleted
+SKILL_DIVINATION needs to be removed from constants ///
+ __LOGIN_COLOR_TEXT needs to be changed 
+Username and password boxes need to be changed ///
+loggedInReference needs to be changed ///
+TPlayer record nees to have displayname, nickname, securelogin deleted //
+disableIPScreenshots needs to be removed //
+isLoggedIn needs to be deleted (just need to find report button color) //
+__setInputBoxes() is not needed //
+__enterLoginInf to be changed, on logout you do not need to re-enter details 
+__secureEnterInfo to be deleted //
 Login responses (line 920 +) need to be changed
 TPlayer.__loginResponse overhaul
-TPlayer.loginToLobby() not needed
-TPlayer.login() needs overhaul
-TPlayer.logout() needs changed
-TPlayer.exitToLobby() needs to be deleted
-TPlayer.leaveLobby() needs to be deleted
+TPlayer.loginToLobby() not needed //
+TPlayer.login() needs overhaul //
+TPlayer.logout() needs changed //
+TPlayer.exitToLobby() needs to be deleted //
+TPlayer.leaveLobby() needs to be deleted //
 TPlayer.switchToWorld needs to be changed
  
 { text.simba }
  
-__findMouseOverBox to be deleted
-__createMouseOverFilter to be deleted
-__getMouseOverText to be deleted
-getMouseOverText() to be deleted
-isMouseOverText to be deleted
-isMouseOverMenuOpen to be deleted
+__findMouseOverBox to be deleted //
+__createMouseOverFilter to be deleted //
+__getMouseOverText to be deleted //
+getMouseOverText() to be deleted //
+isMouseOverText to be deleted //
+isMouseOverMenuOpen to be deleted //
 TRSChooseOption.isOpen needs overhaul (including overload function)
 TRSChooseOption.close needs to be changed
 TRSChooseOption.__getOptions needs to be overhauled

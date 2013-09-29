@@ -55,7 +55,6 @@ const
     SKILL_HUNTER        = 22;
     SKILL_SUMMONING     = 23;
     SKILL_DUNGEONEERING = 24;
-    SKILL_DIVINATION    = 25;
 
 {*
 const Internal
@@ -69,7 +68,7 @@ File's internal constants.
 *}
 const
   __PATH_PLAYER = IncludePath + 'Players/';
-  __LOGIN_COLOR_TEXT = 12378347;
+  __LOGIN_COLOR_TEXT = 16250871;
 
 {*
 var Internal
@@ -83,9 +82,9 @@ File's internal variables.
 
 *}
 var
-  _boxUsername: TBox = [-1, -1, -1, -1];
-  _boxPassword: TBox = [-1, -1, -1, -1];
-  __loggedInReference: TPoint = [-1, -1];
+  _boxUsername: TBox = [402, 321, 571, 349];
+  _boxPassword: TBox = [402, 372, 571, 399];
+  __loggedInReference: TPoint = [426, 490];
 
 (*
 type TPlayer
@@ -110,8 +109,8 @@ Example:
 type
   TPlayer = record
     loginName: string;
-    displayName: string;
-    nickname: string;
+   // displayName: string;
+    //nickname: string;
     password: string;
     bankPin: string;
     location: string;
@@ -120,7 +119,7 @@ type
     findMod: boolean;
     findTrade: boolean;
     reincarnate: boolean;
-    secureLogin: boolean;
+   // secureLogin: boolean;
     worked: TTimeMarker; // automatically calculated if SRL's login methods are used
     world: integer;
     skillLevel: array[0..(SKILL_COUNT - 1)] of integer;
@@ -147,7 +146,7 @@ All the variables associated with players.simba.
 var
   players: TPlayerArray;
   currentPlayer: integer;
-  disableIPScreenshots: boolean;
+ // disableIPScreenshots: boolean;
 
 (*
 TPlayerArray.getActive
@@ -563,15 +562,14 @@ isLoggedIn()
 
 .. code-block:: pascal
 
-    function isLoggedIn(findInterfaces: boolean = false): boolean;
+    function isLoggedIn(): boolean;
 
-Returns true if a player is logged in.  If 'findInterfaces' is set to true,
-it will find and set the bounds of the open interfaces.
+Returns true if a player is logged in.
 
 .. note::
 
-    - by Olly & Coh3n
-    - Last updated: 11 August 2013 by Coh3n
+    - by Officer Barbrady
+    - Last updated: 29 September 2013 by Officer Barbrady
 
 Example:
 
@@ -580,83 +578,9 @@ Example:
     if (isLoggedIn()) then
       writeln('We are logged in!');
 *)
-function isLoggedIn(findInterfaces: boolean = false): boolean;
-var
-  i: integer;
+function isLoggedIn(): boolean;
 begin
-  if (findInterfaces) then
-  begin
-    result := minimap.__find(false);
-
-    // if the minimap isn't visible, we're not logged in
-    if (not result) then
-      exit();
-
-    // call all interface find functions that need to be called
-	  for i := 0 to high(__interfaceFindFunctions) do
-	    if (__interfaceFindFunctions[i] <> nil) then
-	      __interfaceFindFunctions[i]();
-
-    __loggedInReference := [minimap.x+minimap.w - 3, minimap.y - 3]; // so interface find functions aren't unnecessarily called
-  end;
-
-  if (not result) then
-    result := (getColor(__loggedInReference) = 677526); // gold color in the logout button
-end;
-
-{*
-__setInputBoxes()
-~~~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function __setInputBoxes(): boolean;
-
-Finds and sets the username and password box parameters.  This function is
-designed to work with any screen size.  Returns true if both boxes are found.
-
-.. note::
-
-    - by Coh3n
-    - Last updated: 23 July 2013 by Coh3n
-
-Example:
-
-.. code-block:: pascal
-
-    __setInputBoxes();
-*}
-const
-  __BORDER_LENGTH = 524;
-function __setInputBoxes(): boolean;
-var
-  tpaActive, tpaInactive: TPointArray;
-  bdsActive, bdsInactive: TBox;
-  w, h: integer;
-begin
-  getClientDimensions(w, h);
-
-  findColors(tpaActive, 6774863, 0, 0, w-1, h-1); // active box border color
-  findColors(tpaInactive, 6906451, 0, 0, w-1, h-1); // inactive box border color
-
-  if (length(tpaActive) = __BORDER_LENGTH) and (length(tpaInactive) = __BORDER_LENGTH) then
-  begin
-    result := true;
-    print('__setInputBoxes(): Set username and password boxes', TDebug.SUB);
-
-    bdsActive := tpaActive.getBounds();
-    bdsInactive := tpaInactive.getBounds();
-
-    // sets the username box as the box that's closer to the top of the screen
-    if (bdsActive.y1 < bdsInactive.y1) then
-    begin
-      _boxUsername := bdsActive;
-      _boxPassword := bdsInactive;
-    end else begin
-      _boxUsername := bdsInactive;
-      _boxPassword := bdsActive;
-    end;
-  end;
+    result := (getColor(__loggedInReference) = 16777215); // white color of report abuse
 end;
 
 {*
@@ -732,110 +656,6 @@ begin
   wait(100 + random(200));
   typeSend(info, pressEnter);
   result := true;
-end;
-
-{*
-__secureEnterInfo
-~~~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function __secureEnterInfo(user, pass: string): boolean;
-
-An alternative to the standard login procedure. Will enter in only a few
-characters of the username and password at a time. This will add security
-against keyloggers.
-
-.. note::
-
-    - by Coh3n & Flight
-    - Last updated: Feb. 12, 2013 by Coh3n
-
-Example:
-
-.. code-block:: pascal
-
-    See __loginResponse();
-*}
-function __secureEnterInfo(user, pass: string): boolean;
-var
-  i, j, uL, pL, uH, pH, uLen, pLen, tmp: integer;
-  uTextExists, pTextExists: boolean;
-  uTPA, pTPA: TPointArray;
-begin
-  result := true;
-  tmp := mouseSpeed;
-  mouseSpeed := 13;
-
-  // remove existing text from the input boxes
-  uTextExists := findColors(uTPA, __LOGIN_COLOR_TEXT, _boxUsername);
-  pTextExists := findColors(pTPA, __LOGIN_COLOR_TEXT, _boxPassword);
-
-  if (uTextExists) then
-    __enterLoginInfo(_boxUsername, '', true, pTextExists);
-
-  if (pTextExists) then
-    __enterLoginInfo(_boxPassword, '', (not uTextExists), true);
-
-  if (not uTextExists) then
-    mouseBox(intToBox(_boxUsername.x2 - 15, _boxUsername.y1, _boxUsername.x2, _boxUsername.y2), MOUSE_LEFT);
-
-  uL := 0;
-  pL := 0;
-  uLen := length(user);
-  pLen := length(pass);
-
-  repeat
-    if (not (uH = uLen)) then
-    begin
-      // prevents "Out of string range" errors
-      uH := (uL + randomRange(1, 3));
-      if (uH > uLen) then
-        uH := uLen;
-
-      for i := uL to uH do
-      begin
-        wait(100 + random(100));
-        typeSend(user[i], false);
-      end;
-
-      uL := (uH + 1);
-
-      // press enter if entering the password isn't complete
-      if (not (pH = pLen)) then
-        typeByte(VK_ENTER);
-    end;
-
-    if (not (pH = pLen)) then
-    begin
-      // prevents "Out of string range" errors
-      pH := (pL + randomRange(1, 3));
-      if (pH > pLen) then
-        pH := pLen;
-
-      for j := pL to pH do
-      begin
-        wait(100 + random(100));
-        typeSend(pass[j], false);
-      end;
-
-      pL := (pH + 1);
-
-      // click the end of the username box only if entering the username isn't complete
-      if (not (uH = uLen)) then
-      begin
-        wait(250 + random(250));
-        mouseBox(intToBox(_boxUsername.x2 - 15, _boxUsername.y1, _boxUsername.x2, _boxUsername.y2), MOUSE_LEFT);
-      end;
-    end;
-
-  until((uH = uLen) and (pH = pLen));
-
-  typeByte(VK_ENTER);
-  wait(100 + random(200));
-  typeByte(VK_ENTER); // in case we were in the username box
-
-  mouseSpeed := tmp;
 end;
 
 {*
@@ -1245,8 +1065,8 @@ Completely logs the player out of the game.
 
 .. note::
 
-    - by Coh3n
-    - Last updated: 23 July 2013 by Coh3n
+    - by Officer Barbrady
+    - Last updated: 28 September 2013 by Officer Barbrady
 
 Example:
 
@@ -1256,9 +1076,6 @@ Example:
 
 *)
 function TPlayer.logout(): boolean;
-var
-  t: integer;
-  p: TPoint;
 begin
   if (not isLoggedIn()) then
   begin
@@ -1267,85 +1084,11 @@ begin
   end;
 
   print('TPlayer.logout()', TDebug.HEADER);
-
-  if (SRL_Events[EVENT_LOGOUT] <> nil) then
-  begin
-    print('Calling SRL logout event');
-    SRL_Events[EVENT_LOGOUT]();
-  end;
-
-  if (options.open()) then
-  begin
-    p := point(options.x + round(options.w / 2), options.x + options.w - 20); // the logout button
-    mouse(p.rand(randomRange(-50, 50), 5), MOUSE_LEFT);
-
-    t := (getSystemTime() + (7000));
-
-    while (not result) and (getSystemTime() < t) do
-    begin
-      print('Waiting for login screen...');
-      result := (not isLoggedIn());
-      wait(700 + random(500));
-    end;
-
-    self.worked.pause();
-  end else
-    print('Failed to click logout text', TDebug.ERROR);
-
-  print('TPlayer.logout(): '+toStr(result), TDebug.FOOTER);
-end;
-
-(*
-TPlayer.exitToLobby
-~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function TPlayer.exitToLobby(): boolean;
-
-Logs the player out to the lobby.
-
-.. note::
-
-    - by Coh3n
-    - Last updated: Mar. 1, 2013 by Coh3n
-
-Example:
-
-.. code-block:: pascal
-
-    players[currentPlayer].exitToLobby();
-*)
-function TPlayer.exitToLobby(): boolean;
-begin
-  if (lobby._open()) then
-    result := true;
-end;
-
-(*
-TPlayer.leaveLobby
-~~~~~~~~~~~~~~~~~~
-
-.. code-block:: pascal
-
-    function TPlayer.leaveLobby(): boolean;
-
-Leaves the lobby; goes to the login screen.
-
-.. note::
-
-    - by Coh3n
-    - Last updated: Mar. 3, 2013 by Coh3n
-
-Example:
-
-.. code-block:: pascal
-
-    players[currentPlayer].leaveLobby();
-*)
-function TPlayer.leaveLobby(): boolean;
-begin
-  result := lobby._leave();
+  Mouse(Point(753, 10), MOUSE_LEFT);
+  wait(1200);
+  Mouse(Point(636, 375), MOUSE_LEFT);
+  wait(1200);
+  result := isLoggedIn;
 end;
 
 (*
