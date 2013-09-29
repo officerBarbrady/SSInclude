@@ -13,7 +13,7 @@ end;
 
 function SS_inventory.slotEmpty(slot:Integer):boolean;
 begin
-  result :=  SS_Find.Color(65536, 0, SS_inventory.Inventory);
+  result :=  SS_Find.Color(65536, 0, self.Inventory);
 end;
 
 function SS_inventory.Count():Integer

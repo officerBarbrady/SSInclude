@@ -25,7 +25,7 @@ begin
     if SS_Find.Color(922167, 4, self.UpperTabs[i]) then
       result := i;
   end;
-  for i := 0 to high(SS_Tabs.LowerTabs) do
+  for i := 0 to high(self.LowerTabs) do
   begin
     if SS_Find.Color(922167, 4, self.LowerTabs[i]) then
       result := i + 7;

@@ -17,7 +17,7 @@ end;
 
 procedure main.debugMSG(msg:string);
 begin
-  if main.debugMode then
+  if self.debugMode then
     Writeln(msg);
 end;
 
@@ -35,8 +35,8 @@ begin
       TerminateScript;
     end;
   end;
-  main.debugMSG('Setting Game tabs');
+  //main.debugMSG('Setting Game tabs');
   SS_tabs.setUp();
-  main.debugMSG('Setting Inventory');
+ // main.debugMSG('Setting Inventory');
   SS_inventory.Setup();
 end;
