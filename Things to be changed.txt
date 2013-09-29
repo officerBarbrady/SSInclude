@@ -1,0 +1,222 @@
+{ SRL.simba }
+SetupSRL - SMART stuff will have to be changed if unable to load SMART
+ 
+ 
+ 
+{ client.simba }
+ 
+Will have to be deleted if I cant load SMART
+ 
+ 
+{ debug.simba }
+ 
+No changes needed
+ 
+ 
+{ Globals.simba }
+ 
+EVENT_RS_UPDATED may need to be removed
+ 
+{ mouse.simba }
+ 
+No changes needed
+ 
+{ players.simba }
+ 
+SKILL_DIVINATION needs to be removed from constants
+ __LOGIN_COLOR_TEXT needs to be changed
+Username and password boxes need to be changed
+loggedInReference needs to be changed
+TPlayer record nees to have displayname, nickname, securelogin deleted
+disableIPScreenshots needs to be removed
+isLoggedIn needs to be deleted (just need to find report button color)
+__setInputBoxes() is not needed
+__enterLoginInf to be changed, on logout you do not need to re-enter details
+__secureEnterInfo to be deleted
+Login responses (line 920 +) need to be changed
+TPlayer.__loginResponse overhaul
+TPlayer.loginToLobby() not needed
+TPlayer.login() needs overhaul
+TPlayer.logout() needs changed
+TPlayer.exitToLobby() needs to be deleted
+TPlayer.leaveLobby() needs to be deleted
+TPlayer.switchToWorld needs to be changed
+ 
+{ text.simba }
+ 
+__findMouseOverBox to be deleted
+__createMouseOverFilter to be deleted
+__getMouseOverText to be deleted
+getMouseOverText() to be deleted
+isMouseOverText to be deleted
+isMouseOverMenuOpen to be deleted
+TRSChooseOption.isOpen needs overhaul (including overload function)
+TRSChooseOption.close needs to be changed
+TRSChooseOption.__getOptions needs to be overhauled
+TRSChooseOption.optionsExist to be changed
+TRSChooseOption._select to be changed (and the overloads)
+ 
+ 
+{ backpack.simba }
+ 
+procedure TRSTabBackpack.__init(); ??
+TRSTabBackPack._updateBounds(); to be deleted
+TRSTabBackpack.isOpen() to be deleted
+TRSTabBackpack.open() to be changed
+TRSTabBackpack.getSlotBox to be changed
+TRSTabBackpack.isItemInSlot to be changed, pretty much all inventory functions need
+to be overhauled
+ 
+{ gametab.simba }
+ 
+ 
+Needs overhaul not worth mentioning all the changes needed
+ 
+{ stats.simba }
+ 
+TRSTabStats.isOpen() changs needed
+TRSTabStats.getSkillLevel changes needed
+ 
+{ folder lobby }
+lobby.simba - delete
+worlds.simba - overhaul, SS only has 5 worlds
+ 
+{ actionbar.simba }
+Delete
+ 
+{ bankscreen.simba }
+ 
+const of bank tab color - delete no tabs in SS
+QUICK deposit shortcuts needs changing
+ 
+again, everything in here pretty much needs to be changed
+
+
+{ chatbox.simba }
+
+TRSChatbox._findTextBorder needs to be changed
+TRSChatbox._findEmoteBorder - delete
+TRSChatbox._findQuickChatBorder - delete
+TRSChatBox.__find() - change
+TRSChatbox.isOpen() - delete
+
+
+
+{ converationbox.simba }
+gold color and white color needs to be changed (line 26 and 28)
+TRSConversationBox.__find() - change
+TRSConversationBox.getSpeaker() - change
+TRSConversationBox.areTalking()- OK
+TRSConversationBox.isOpen() - change (specificly colors and coords)
+TRSConversationBox.getChatArea() - change (same as above)
+TRSConversationBox.getChat() - Same as above
+TRSConversationBox.findChat OK (check isArrInStr)
+TRSConversationBox.selectOption - change colors and coords
+TRSConversationBox.continue - change (colors and coords)
+
+
+
+
+{ interfaces.simba }
+
+Change globals (notes tab uneeded in gametab, actionbar undeeded, client constants uneeded)
+everything looks ok for now
+  
+
+{ mainscreen.simba }
+
+TRSMainscreen.__find() - delete
+TRSMainscreen.setAngle - delete
+TRSMainscreen.findObject - change
+
+
+{ minimap.simba }
+
+Constants of NPC, item, player, freind, team need to be changed
+MM pixel count needs to be changed
+Some symbols way need to be deleted
+TRSMinimap.__createMaskTPA() - Change the bitmap?
+TRSMinimap.__find - delete
+TRSMinimap._getButton - delete lodestone and map cases
+TRSMinimap.getAngleRadians() - replace with SRL5 version and change colors/bounds
+TRSMinimap.clickCompass - not sure if this is needed or not 
+TRSMinimap.isPointOn - change
+TRSMinimap.findDTM - change
+TRSMinimap.getDots - change
+TRSMinimap.isFlagPresent - change (overload too)
+TRSMinimap.waitFlag - change
+TRSMinimap.radialWalk - change coords
+TRSMinimap._getSymbol - update bitmaps
+TRSMinimap._getSymbolColor ? maybe change ?
+TRSMinimap.isResting() - change
+TRSMinimap.getRunEnergy() - not added yet, will add ourselves
+TRSMinimap.isRunEnabled() change colors and coords
+TRSMinimap.toggleRun - maybe change
+isLodeStoneOpen - delete
+lodestoneTeleportTo - delete
+
+
+
+
+
+{ options.simba }
+
+TRSOptions.isOpen() - change color and maybe coords
+TRSOptions.open() - overhaul
+
+
+{ pinscreen.simba }
+
+TRSPinScreen.__find() - change colors and coords
+TRSPinScreen.close() - change
+TRSPinScreen.waitNotOpen - should be able to keep same
+TRSPinScreen.__exit - ??
+TRSPinScreen.__findNumber- change
+TRSPinScreen.enter - change coords and colors etc etc
+
+
+
+
+{ antiban.simba }
+
+- Delete
+
+{ items.simba }
+
+Black, and white outlines need to be changed
+yellow text is fine
+findItem - update to work with inventory arr (currently has a parameter for the TboxArray, I want to 
+change this so it uses the Inventory array by defualt)
+getItemAmount - change colors
+isItemIn - ? should be fine
+
+
+
+{ smart.simba }
+
+- Edit the smart parmams to Load SS
+- Need to be tested whether or not smart can read the colors and pass to simba
+
+{ srlstats.simba }
+
+-Should be fine
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
