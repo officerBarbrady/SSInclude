@@ -11,8 +11,8 @@ var
 begin
   lowerBounds := IntToBox(524, 467, 760, 503);
   upperBounds := IntToBox(524, 169, 760, 204);
-  SS_tabs.LowerTabs := ExplodeBox(lowerBounds, 1, 7);
-  SS_tabs.UpperTabs := ExplodeBox(upperBounds, 1, 7);
+  self.LowerTabs := ExplodeBox(lowerBounds, 1, 7);
+  self.UpperTabs := ExplodeBox(upperBounds, 1, 7);
 end;
 
 function SS_tabs.currentTab():Integer;
@@ -20,21 +20,21 @@ var
   i:Integer;
 begin
   result := - 1;
-  for i := 0 to high(SS_Tabs.UpperTabs) do
+  for i := 0 to high(self.UpperTabs) do
   begin
-    if SS_Find.Color(922167, 4, SS_Tabs.UpperTabs[i]) then
+    if SS_Find.Color(922167, 4, self.UpperTabs[i]) then
       result := i;
   end;
   for i := 0 to high(SS_Tabs.LowerTabs) do
   begin
-    if SS_Find.Color(922167, 4, SS_Tabs.LowerTabs[i]) then
+    if SS_Find.Color(922167, 4, self.LowerTabs[i]) then
       result := i + 7;
   end;
 end;
 
 function SS_tabs.currentTabString():String;
 begin
-  case SS_tabs.currentTab of
+  case self.currentTab of
     0: result := 'combat';
     1: result := 'stats';
     2: result := 'quest';
@@ -55,8 +55,8 @@ end;
 procedure SS_tabs.toTab(which:String;ID:Integer);
 begin
   case which of
-    'upper': ClickBox(SS_Tabs.UpperTabs(ID));
-    'lower': ClickBox(SS_Tabs.LowerTabs(ID - 7));
+    'upper': ClickBox(self.UpperTabs(ID));
+    'lower': ClickBox(self.LowerTabs(ID - 7));
   end;
 end;
 
