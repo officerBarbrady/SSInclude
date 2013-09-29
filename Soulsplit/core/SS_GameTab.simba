@@ -1,0 +1,63 @@
+{$i Soulsplit/misc/Box.simba}
+{$i Soulsplit/misc/SS_Color.simba}
+
+type SS_tabs = record
+  LowerTabs, UpperTabs:TBoxArray;
+end;
+
+procedure SS_tabs.setUp();
+var
+  lowerBounds, upperBounds:Tbox;
+begin
+  lowerBounds := IntToBox(524, 467, 760, 503);
+  upperBounds := IntToBox(524, 169, 760, 204);
+  SS_tabs.LowerTabs := ExplodeBox(lowerBounds, 1, 7);
+  SS_tabs.UpperTabs := ExplodeBox(upperBounds, 1, 7);
+end;
+
+function SS_tabs.currentTab():Integer;
+var
+  i:Integer;
+begin
+  result := - 1;
+  for i := 0 to high(SS_Tabs.UpperTabs) do
+  begin
+    if SS_Find.Color(922167, 4, SS_Tabs.UpperTabs[i]) then
+      result := i;
+  end;
+  for i := 0 to high(SS_Tabs.LowerTabs) do
+  begin
+    if SS_Find.Color(922167, 4, SS_Tabs.LowerTabs[i]) then
+      result := i + 7;
+  end;
+end;
+
+function SS_tabs.currentTabString():String;
+begin
+  case SS_tabs.currentTab of
+    0: result := 'combat';
+    1: result := 'stats';
+    2: result := 'quest';
+    3: result := 'inventory';
+    4: result := 'equip';
+    5: result := 'prayer';
+    6: result := 'magic';
+    7: result := 'summoning';
+    8: result := 'freinds';
+    9: result := 'ignore';
+    10: result := 'clan_chat';
+    11: result := 'options';
+    12: result := 'emotes';
+    13: result := 'music';
+  end;
+end;
+
+procedure SS_tabs.toTab(which:String;ID:Integer);
+begin
+  case which of
+    'upper': ClickBox(SS_Tabs.UpperTabs(ID));
+    'lower': ClickBox(SS_Tabs.LowerTabs(ID - 7));
+  end;
+end;
+
+

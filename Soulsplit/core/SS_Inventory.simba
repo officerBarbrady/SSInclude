@@ -1,0 +1,78 @@
+type SS_inventory = record
+  Inventory:TBoxArray;
+end;
+
+
+procedure SS_inventory.Setup();
+var
+  InvBounds:TBox;
+begin
+  InvBounds := IntToBox(561, 212, 720, 459);
+  SS_inventory.Inventory := ExplodeBox(InvBounds, 7, 4);
+end;
+
+function SS_inventory.slotEmpty(slot:Integer):boolean;
+begin
+  result :=  SS_Find.Color(65536, 0, SS_inventory.Inventory);
+end;
+
+function SS_inventory.Count():Integer
+var
+  i:Integer;
+begin
+ for i := 0 to high(SS_inventory.Inventory) do
+  begin
+    if SS_inventory.slotEmpty(i) then
+      result := result + 1;
+  end;
+end;
+
+function SS_inventory.Full():boolean;
+begin
+  result := (SS_inventory.Count = 28);
+end;
+
+function SS_inventory.ClickDTM():boolean;
+begin
+end;
+
+function SS_inventory.ClickBMP(BMPSearch, tol:Integer):boolean;
+var
+  i, x, y:Integer;
+begin
+  for i := 0 to high(SS_inventory.Inventory) do
+  begin
+    result := SS_find.BMP(BMPsearch, tol, SS_inventory.Inventory[i]);
+    if result then
+      Mouse(Point(x, y), 0);
+  end;
+end;
+
+function SS_inventory.DTMcount(DTMSearch:Integer):Integer
+var
+  i:Integer;
+begin
+  for i := 0 to high(SS_inventory.Inventory) do
+  begin
+    SS_find.DTM(DTMSearch, SS_inventory.Inventory[i]);
+      result := result + 1;
+  end;
+end;
+
+function SS_inventory.BMPcount(BMPSearch, tol:Integer):Integer;
+var
+  i:Integer;
+begin
+  for i := 0 to high(SS_inventory.Inventory) do
+  begin
+    If SS_find.BMP(BMPsearch, tol, Inventory[i]) then
+      result := result + 1;
+  end;
+end;
+
+procedure SS_inventory.Interact(Slot:Integer);
+begin
+  ClickBox(Inventory[Slot]);
+end;
+
+

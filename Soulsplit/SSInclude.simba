@@ -1,0 +1,42 @@
+{$i Soulsplit/core/SS_GameTab.simba}
+{$i Soulsplit/core/SS_Interface.simba}
+{$i Soulsplit/core/SS_Inventory.simba}
+{$i Soulsplit/core/SS_Minimap.simba}
+{$i Soulsplit/core/SS_Prayer.simba}
+
+const
+    Revision = 0;
+
+type main = record
+  debugMode:boolean;
+end;
+
+function main.UpdateSSInclude:boolean;
+begin
+end;
+
+procedure main.debugMSG(msg:string);
+begin
+  if main.debugMode then
+    Writeln(msg);
+end;
+
+procedure main.SetupSSInclude(update, debug:boolean);
+begin
+  if debug then
+    self.debugMode := true;
+  Writeln('Setting up Soulsplit include revision ' + ToStr(Revision));
+  Writeln('Debug mode ' + ToStr(self.debugMode));
+  if update then
+  begin
+    if UpdateSSInclude then
+    begin
+      Writeln('There has been a update for the Include!');
+      TerminateScript;
+    end;
+  end;
+  main.debugMSG('Setting Game tabs');
+  SS_tabs.setUp();
+  main.debugMSG('Setting Inventory');
+  SS_inventory.Setup();
+end;

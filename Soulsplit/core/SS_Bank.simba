@@ -1,0 +1,21 @@
+type ss_Bank = record
+  Slots:TBoxArray;
+end;
+
+function ss_Bank.BankScreen():Boolean;
+begin
+end;
+
+procedure ss_Bank.Close();
+begin
+end;
+
+function ss_Bank.countItem(slot:Integer):Integer;
+begin
+end;
+
+function ss_Bank.withdrawItem(slot, amt:Integer):Integer;
+begin
+end;
+
+
