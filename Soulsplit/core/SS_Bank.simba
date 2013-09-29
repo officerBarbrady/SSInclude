@@ -1,3 +1,4 @@
+
 type ss_Bank = record
   Slots:TBoxArray;
 end;
@@ -17,5 +18,4 @@ end;
 function ss_Bank.withdrawItem(slot, amt:Integer):Integer;
 begin
 end;
-
 

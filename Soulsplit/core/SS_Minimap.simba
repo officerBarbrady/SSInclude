@@ -31,18 +31,17 @@ procedure SS_minimap.MakeCompassEast;
 begin
 end;
 
-procedure minimap.MakeCompassSouth;
+procedure SS_minimap.MakeCompassSouth;
 begin
 end;
 
-function minimap.FFlag:Boolean;
+function SS_minimap.FFlag:Boolean;
 begin
 end;
 
-procedure minimap.Flag;
+procedure SS_minimap.Flag;
 begin
 end;
-
 
 
 

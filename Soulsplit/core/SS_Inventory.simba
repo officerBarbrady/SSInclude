@@ -13,24 +13,24 @@ end;
 
 function SS_inventory.slotEmpty(slot:Integer):boolean;
 begin
-  result :=  SS_Find.Color(65536, 0, self.Inventory);
+  result := SS_Find.Color(65536, 0, self.Inventory[slot]);
 end;
 
-function SS_inventory.Count():Integer
+function SS_inventory.Count():Integer;
 var
   i:Integer;
 begin
  for i := 0 to high(self.Inventory) do
   begin
-    if self.slotEmpty(i) then
+    if SS_inventory.slotEmpty(i) then
       result := result + 1;
   end;
 end;
-
+     {
 function SS_inventory.Full():boolean;
 begin
   result := (SS_inventory.Count = 28);
-end;
+end;  }
 
 function SS_inventory.ClickDTM():boolean;
 begin
@@ -74,5 +74,4 @@ procedure SS_inventory.Interact(Slot:Integer);
 begin
   ClickBox(self.Inventory[Slot]);
 end;
-
 

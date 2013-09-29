@@ -1,6 +1,5 @@
 {$i Soulsplit/misc/Box.simba}
 {$i Soulsplit/misc/SS_Color.simba}
-
 type SS_tabs = record
   LowerTabs, UpperTabs:TBoxArray;
 end;
@@ -55,9 +54,8 @@ end;
 procedure SS_tabs.toTab(which:String;ID:Integer);
 begin
   case which of
-    'upper': ClickBox(self.UpperTabs(ID));
-    'lower': ClickBox(self.LowerTabs(ID - 7));
+    'upper': ClickBox(self.UpperTabs[ID]);
+    'lower': ClickBox(self.LowerTabs[ID - 7]);
   end;
 end;
-
 

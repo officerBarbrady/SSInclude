@@ -15,18 +15,9 @@ function main.UpdateSSInclude:boolean;
 begin
 end;
 
-procedure main.debugMSG(msg:string);
+procedure main.SetupSSInclude(update:boolean);
 begin
-  if self.debugMode then
-    Writeln(msg);
-end;
-
-procedure main.SetupSSInclude(update, debug:boolean);
-begin
-  if debug then
-    self.debugMode := true;
   Writeln('Setting up Soulsplit include revision ' + ToStr(Revision));
-  Writeln('Debug mode ' + ToStr(self.debugMode));
   if update then
   begin
     if UpdateSSInclude then
@@ -35,8 +26,6 @@ begin
       TerminateScript;
     end;
   end;
-  //main.debugMSG('Setting Game tabs');
   SS_tabs.setUp();
- // main.debugMSG('Setting Inventory');
   SS_inventory.Setup();
 end;
