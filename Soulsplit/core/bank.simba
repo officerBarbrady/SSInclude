@@ -1,6 +1,6 @@
 {$include_once interface.simba}
 //{$include_once misc/datatypes/string.simba}
-{$include_once RSPS/misc/datatypes/string.Simba}
+{$include_once Soulsplit/misc/datatypes/string.Simba}
 
 (*
   File name: Bank.simba

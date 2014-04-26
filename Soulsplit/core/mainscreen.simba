@@ -5,56 +5,35 @@
   Authors: Officer Barbrady
 *)
 
+{$include_once timing.simba}
+{$I Soulsplit/core/text.Simba}
+
 type
-  screen = record(rsps_interface)
+  SSscreen = record(ssInterface)
     center:TPoint;
     screen_name:string;
   end;
 
 var
-  mainscreen:screen;
+  mainscreen:SSscreen;
 
 (*
   Author: Officer Barbrady
   Description: Sets up the mainscreen coordinates
 *)
 
-procedure screen.setup(rev:Integer);
+procedure SSscreen.setup();
 begin
-  case rev of
-    317..507:
-    with self do
-    begin
-      bounds := intToBox(0, 0, 514, 337);
-      center := point(248, 182);
-      screen_name := '317 mainscreen';
-    end;
-    507..719:
-    with self do
-    begin
-      bounds := intToBox(0, 0, 0, 0); //TODO
-      center := point(round(ms.x1/2), round(ms.y1/2));
-      screen_name := '508 mainscreen';
-    end;
-    720..800:
-    with self do
-    begin
-      bounds := intToBox(0, 0, 514, 337); //TODO
-      center := point(round(ms.x1/2), round(ms.y1/2));
-      screen_name := '724 mainscreen';
-    end;
-  end;
+  self.center := point(248, 182);
 end;
 
 (*
   Author: Officer Barbrady
   Description: Finds object on the mainscreen, uses multiple colors for objects
-  that can be different colors. Uses the _rsps_server type to avoid having
-  to take an extra arguement for the server var (so it can just use
-  self.waitUpTextMulti and self.waitOptionMulti)
+  that can be different colors.
 *)
 
-function _rsps_server.findObject(Colors, tols:TintegerArray;hue,sat:TExtendedArray;dist, minLength:integer;uptext:tstringarray;Useuptext,rightClick:boolean):boolean;
+function SSscreen.findObject(Colors, tols:TintegerArray;hue,sat:TExtendedArray;dist, minLength:integer;uptext:tstringarray;Useuptext,rightClick:boolean):boolean;
 var
   mtpas, matpa:t2dpointarray;
   mtpa:tpointarray;
@@ -68,7 +47,7 @@ begin
   for i := 0 to high(Colors) do
   begin
     SetColorSpeed2Modifiers(hue[i], sat[i]);
-    findColorsTolerance(mtpas[i], colors[i], mainscreen.bounds, tols[i]);
+    findColorsTolerance(mtpas[i], colors[i], self.bounds, tols[i]);
   end;
   ColorToleranceSpeed(cts);
   SetColorSpeed2Modifiers(0.02, 0.02);
@@ -84,7 +63,7 @@ begin
     for i := 0 to high(matpa) do
     begin
       if useUptext then
-        if (self.waitUpTextMulti(uptext, 150)) then
+        if (waitUpTextMulti(uptext, 150)) then
           continue
         else
           writeln('Uptext ' , uptext, ' not found');
@@ -92,7 +71,7 @@ begin
       if rightClick then
       begin
         Mouse(x, y, 0, 0, Mouse_right);
-        if self.waitOptionMulti(['ttack','tack'], 1200) then
+        if chooseOption.waitOptionMulti(['ttack','tack'], 1200) then
           exit(true);
       end else
       begin
@@ -108,7 +87,7 @@ end;
   Description: Finds object on the mainscreen, 1 color
 *)
 
-function _rsps_server.findObject(Color, tol:integer;hue,sat:Extended;dist, minLength:integer;uptext:tstringarray;Useuptext,rightClick:boolean):boolean; overload;
+function SSscreen.findObject(Color, tol:integer;hue,sat:Extended;dist, minLength:integer;uptext:tstringarray;Useuptext,rightClick:boolean):boolean; overload;
 begin
   result := self.findObject([color], [tol], [hue], [sat], dist, minLength, uptext, useUptext, rightClick);
 end;
@@ -119,16 +98,32 @@ end;
   do not need to specify, distance, min length, or whether to right click
 *)
 
-function _rsps_server.findObject(Color, tol:integer;hue,sat:Extended;uptext:tstringarray):boolean; overload;
+function SSscreen.findObject(Color, tol:integer;hue,sat:Extended;uptext:tstringarray):boolean; overload;
 begin
   result := self.findObject([color], [tol], [hue], [sat], 3, 60, uptext, true, false);
 end;
 
+(*
+  Authors: Officer Barbrady
+  Description: Gets all overhead chat text
+*)
 
-
-
-
-
-
-
+function SSscreen.getOverHeadChatText:TStringArray;
+var
+  mainscreenTextTPA:TPointArray;
+  mainscreenTextATPA, textATPA:T2DPointArray;
+  i:integer;
+begin
+  findColors(mainscreenTextTPA, 65535, self.bounds);
+  if (length(mainscreenTextTPA) < 1) then
+    exit();
+  mainscreenTextATPA := clusterTPA(mainscreenTextTPA, 7);
+  setLength(result, length(mainscreenTextATPA));
+  for i := 0 to high(mainscreenTextATPA) do
+  begin
+    textATPA := splitTPAEx(mainscreenTextATPA[i], 1, 10);
+    sortATPAFromFirstPointX(textATPA, point(0, 0));
+    result[i] := getTextATPA(textATPA, 5, 'upchars07');
+  end;
+end;
 

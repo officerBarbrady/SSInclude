@@ -4,6 +4,9 @@
   Authors: Officer Barbrady
 *)
 
+//{$include_once text.simba}
+{$I Soulsplit/core/text.Simba}
+
 const
   Time_Formal = 0;
   Time_Short  = 1;
@@ -17,7 +20,7 @@ const
   Description: wait for an option
 *)
 
-function _rsps_server.WaitOptionMulti(S: TStringArray; TextType: string; Action: fnct_ActionOptions; Time: Integer): Boolean;
+function waitOptionMulti(S: TStringArray; TextType: string; Action: fnct_ActionOptions; Time: Integer): Boolean;
 var
   T: Integer;
 begin
@@ -25,24 +28,24 @@ begin
   T := GetSystemTime + Time;
   while (GetSystemTime < T) do
   begin
-    if (self.chooseOptionMulti(S, TextType, Action)) then
+    if (chooseOptionMulti(S, TextType, Action)) then
       exit(true);
     Wait(20 + Random(10));
   end;
 end;
 
 (*
-  by Starblaster100 & Nielsie95 & Freddy1990, modified by Officer Barbrady
+  by Robert
   Description: Checks for uptext (multiple)
 *)
-function _rsps_server.IsUpTextMulti(Text: TStringArray): Boolean;
+function isUpTextMulti(Text: TStringArray): Boolean;
 var
-  TheText: string;
-  i: Integer;
+  txt:string;
+  i:integer;
 begin
-  TheText := self.getUpText;
+  txt := getUpText;
   for i := 0 to High(Text) do
-    if (Pos(Text[i], TheText) > 0) then
+    if (txt.contains(text[i])) then
       exit(true);
 end;
 
@@ -51,19 +54,19 @@ end;
   Description: waits for an option
 *)
 
-function _rsps_server.waitOptionMulti(S: TStringArray; Time: Integer): Boolean; overload;
+function waitOptionMulti(S: TStringArray; Time: Integer): Boolean; overload;
 begin
-  Result := self.waitOptionMulti(S, 'all', ClickLeft, Time);
+  Result := waitOptionMulti(S, 'all', ClickLeft, Time);
 end;
 
 (*
-  Author: Officer Barbrady
+  Author: Robert
   Description: waits for an option
 *)
 
-function _rsps_server.waitOption(S: string; Time: Integer): Boolean; overload;
+function waitOption(S: string; Time: Integer): Boolean; overload;
 begin
-  Result := self.waitOptionMulti([s], 'all', ClickLeft, Time);
+  Result := waitOptionMulti([s], 'all', ClickLeft, Time);
 end;
 
 (*
@@ -71,7 +74,7 @@ end;
   Description: Waits for a uptext to appear (multiple)
 *)
 
-function _rsps_server.waitUpTextMulti(S: TStringArray; Time: Integer): Boolean;
+function waitUpTextMulti(S: TStringArray; Time: Integer): Boolean;
 var
   T: Integer;
 begin
@@ -79,7 +82,7 @@ begin
   T := GetSystemTime + Time;
   while (GetSystemTime < T) do
   begin
-    if (self.IsUpTextMulti(S)) then
+    if (isUpTextMulti(S)) then
       exit(true)
     else
       Wait(20 + Random(20));
@@ -87,12 +90,12 @@ begin
 end;
 
 (*
-  by Simba Development Team.
-  Description: Checks for uptext
+  by Robert
+  Description: returns true if uptext exists
 *)
-function _rsps_server.IsUpText(UpText: string): Boolean;
+function isUpText(UpText: string): Boolean;
 begin
-  Result := (Pos(UpText, self.GetUpText) > 0);
+  Result := getUpText().contains(upText);
 end;
 
 (*
@@ -100,9 +103,9 @@ end;
   Description: Waits for a uptext to appear
 *)
 
-function _rsps_server.waitUptext(S: string; Time: Integer): Boolean;
+function waitUptext(S: string; Time: Integer): Boolean;
 begin
-  Result := self.waitUptextMulti([S], Time);
+  Result := waitUptextMulti([S], Time);
 end;
 
 (*

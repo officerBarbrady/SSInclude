@@ -18,7 +18,7 @@ var minimap:SSminimap;
 
 function SSminimap.getHealth:integer;
 begin
-  result := self.getText(map.healthBox, [65280, 501500, 65535, 855541], self.fontName);
+  result := getSimpleText([65280, 501500, 65535, 855541], 0, 0, 0, 0, 'statchats07');
 end;
 
 (*
@@ -28,7 +28,7 @@ end;
 
 function SSminimap.getPrayer:integer;
 begin
-  result := self.getText(map.prayerBox, [65280, 501500, 65535, 855541], self.fontName);
+  result := getSimpleText([65280, 501500, 65535, 855541], 0, 0, 0, 0, 'statchats07');
 end;
 
 (*
@@ -38,7 +38,7 @@ end;
 
 function SSminimap.getRun:integer;
 begin
-  result := self.getText(map.runBox, [65280, 501500, 65535, 855541], self.fontName);
+  result := getSimpleText([65280, 501500, 65535, 855541], 0, 0, 0, 0, 'statchats07');
 end;
 
 (*
@@ -107,40 +107,6 @@ end;
 procedure SSminimap.setRun(turnOn:boolean;energy:integer) overload;
 begin
 end;
-
-(*
-  by Zyt3x
-*)
-
-procedure TPointArray.addIndex(const p : TPoint; const index : Integer);
-var
-  I : Integer;
-begin
-  if not inRange(index, low(self), length(self)) then
-  begin
-    WriteLn('ERROR: addIndex: index larger than array length.');
-    Exit;
-  end;
-
-  setLength(self, length(self)+1);
-  for I := high(self)-1 downto index do
-    self[I+1] := self[I];
-  self[index] := p;
-end;
-
-(*
-  by Zyt3x
-*)
-
-procedure TPointArray.append(const p : TPoint);
-begin
-  self.addIndex(p, length(self));
-end;
-
-(*
-  Author:
-  Description:
-*)
 
 procedure SSminimap.toMainscreen;
 begin

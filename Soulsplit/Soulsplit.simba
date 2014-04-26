@@ -66,12 +66,14 @@ begin
     end;
 end;
 
-procedure SetUpSoulsplitInclude(update:boolean); overload;
+procedure SetUpSoulsplitInclude(update:boolean);
 var
   t:integer;
 begin
   t := getSystemTime();
   activateClient('Soulsplit');
+  inventory.init();
+  mainscreen.init();
   writeln('Soulsplit include compiled in ' , t,  ' ms');
   if update then
     checkUpdate();

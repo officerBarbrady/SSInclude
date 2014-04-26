@@ -38,62 +38,13 @@ end;
   Description: Gets soulsplit chat text (the whole box)
 *)
 
-function ssChatBox.getchat:tstringarray;overload;
+function ssChatBox.getchat():tstringarray;overload;
 var
   i:integer;
 begin
   setLength(result, 8);
   for i := 7 downto 0 do
     result[i] := ss_getChat(i);
-end;
-
-(*
-  Author: Officer Barbrady
-  Description: Gets 317 chat text
-*)
-
-function ssChatBox.getchat(line:integer;colors:tintegerArray):string;
-var
-  texttpas, textatpa:t2dpointarray;
-  texttpa:tpointarray;
-  textcolors:tintegerarray;
-  i:integer;
-begin
-  setLength(result, 8);
-  setLength(texttpas, length(colors));
-  for i := 0 to high(colors) do
-    findColors(texttpas[i], colors[i], 6, 343 + (line * 14), 495, 361 + (line * 14));
-  texttpa := mergeAtpa(texttpas);
-  textatpa := splittpaex(texttpa, 1, 10);
-  filtertpasbetween(textatpa, 0, 1);
-  SortATPAFromFirstPointX(textatpa, Point(0, 0));
-  result := getTextATPA(textatpa, 3, 'smallchars07');
-end;
-
-(*
-  Author: Officer Barbrady
-  Description: Gets chat text (line)
-*)
-
-function ssChatBox.getChatText(line:integer):string;
-var
-  i:integer;
-begin
-  result := self.getChat(line, [0, 128, 255, 16711680, 8650752]);
-end;
-
-(*
-  Author: Officer Barbrady
-  Description: Gets chat text (whole box)
-*)
-
-function ssChatBox.getChatText:tstringarray; overload;
-var
-  i:integer;
-begin
-  setLength(result, 8);
-  for i := 0 to 7 do
-    result[i] := self.getChatText(i);
 end;
 
 (*
