@@ -1,0 +1,41 @@
+type
+  TDirectory = record
+    path, name:string;
+  end;
+
+
+function TStringArray.containsString(const str:string):boolean;
+var i:integer = 0;
+begin
+  for i := 0 to high(self) do
+    if (self[i] = str) then
+      exit(true);
+end;
+
+procedure TStringArray.clear;
+begin
+  setLength(self, 0);
+end;
+
+function getHardDriveLetter():string;
+var
+  names:string;
+  folders:tstringarray;
+  i:integer;
+begin
+  names := 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for i := 1 to length(names) do
+  begin
+    folders := getDirectories(names[i] + ':\');
+    if folders.containsString('Simba') then
+      exit(names[i])
+    else
+      folders.clear();
+  end;
+end;
+
+begin
+
+  writeln(getHardDriveLetter());
+
+end.

@@ -1,0 +1,651 @@
+{$include_once mouse.simba}
+{$include_once gametab.simba}
+
+(*
+  File name: inventory.simba
+  Description: Contains functions that return information about the inventory
+  Authors: Janilabo, Officer Barbrady
+*)
+
+type
+  SSinventory = record(SSinterface)
+    slots:TboxArray;
+    outline:Integer;
+  end;
+
+var
+  inventory:SSinventory;
+
+(*
+  Author: Janilabo
+  Description: Returns the center of a box
+*)
+
+function SSinventory.boxCenter(bx: TBox): TPoint;
+begin
+  if ((bx.X1 > bx.X2) or (bx.Y1 > bx.Y2)) then
+  begin
+    if (bx.X1 > bx.X2) then
+      Swap(bx.X1, bx.X2);
+    if (bx.Y1 > bx.Y2) then
+      Swap(bx.Y1, bx.Y2);
+  end;
+  Result := Point(Round(bx.X1 + ((bx.X2 - bx.X1) div 2)), Round(bx.Y1 + ((bx.Y2 - bx.Y1) div 2)));
+end;
+
+(*
+  Author: Janilabo
+  Description: Returns an array of boxes based off the bounds of a box and the rows
+  and columns inputed
+*)
+
+function explodeBox(bx: TBox; rows, columns: integer): TBoxArray;
+var
+  r, c, w, h, ew, eh, ow, oh, i, x, y: integer;
+begin
+  if ((rows > 0) and (columns > 0) and (bx.X1 <= bx.X2) and (bx.Y1 <= bx.Y2)) then
+  begin
+    w := ((bx.X2 - bx.X1) + 1);
+    h := ((bx.Y2 - bx.Y1) + 1);
+    if (rows < 1) then
+      rows := 1
+    else
+      if (rows > h) then
+        rows := h;
+    if (columns < 1) then
+      columns := 1
+    else
+      if (columns > w) then
+        columns := w;
+    w := (w div columns);
+    h := (h div rows);
+    ew := (((bx.X2 - bx.X1) + 1) - (w * columns));
+    eh := (((bx.Y2 - bx.Y1) + 1) - (h * rows));
+    SetLength(result, (rows * columns));
+    y := bx.Y1;
+    for r := 0 to (rows - 1) do
+    begin
+      x := bx.X1;
+      if ((eh > 0) and (r < eh)) then
+        oh := 1
+      else
+        oh := 0;
+      for c := 0 to (columns - 1) do
+      begin
+        if ((ew > 0) and (c < ew)) then
+          ow := 1
+        else
+          ow := 0;
+        i := ((r * columns) + c);
+        result[i].X1 := x;
+        result[i].X2 := (x + (w - 1) + ow);
+        result[i].Y1 := y;
+        result[i].Y2 := (y + (h - 1) + oh);
+        x := (Result[i].X2 + 1);
+      end;
+      y := (result[i].Y2 + 1);
+    end;
+  end else
+    SetLength(result, 0);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Sets up the information to be used for the inventory based off
+  the server revision
+*)
+
+procedure SSinventory.init(rev:Integer);
+begin
+  self.slots := explodeBox(IntToBox(563, 214, 720, 460), 7, 4);
+  bounds := intToBox(563, 214, 720, 460);
+end;
+
+function SSinventory.getSlot(slot:integer);
+begin
+  result := self.slots[slot];
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Checks if a slot in the inventory is full
+*)
+
+function SSinventory.slotFull(slot:Integer):Boolean;
+begin
+  result := FindColor(x, y, 65536, self.slots[slot]);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns how many items are in the inventory
+*)
+
+function SSinventory.count:Integer;
+var
+  i:Integer;
+begin
+  for i := 0 to high(self.slots) do
+    if self.slotFull(i) then
+      result := result + 1;
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns whether the inventory is full or not
+*)
+
+function SSinventory.full:Boolean;
+begin
+  result := false;
+  exit(self.count = 28);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Interacts with an item in the inventory
+*)
+
+procedure SSinventory.interactItem(slot:Integer; Button:Integer);
+begin
+  mouse(self.boxCenter(self.slots[slot]).x, self.boxCenter(self.slots[slot]).y, 0, 0, BUTTON);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Interacts with an item in the inventory
+*)
+
+procedure SSinventory.mouseItem(slot:Integer);
+begin
+  mmouse(self.boxCenter(self.slots[slot]).x, self.boxCenter(self.slots[slot]).y, 0, 0);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns true if a bitmap Exists in a slot
+*)
+
+function SSinventory.bitmapExists(bmp, slot, tol:integer):boolean;
+var
+  x, y:integer;
+begin
+  result := FindBitmaptoleranceIn(bmp, x, y, self.slots[slot].X1, self.slots[slot].y1, self.slots[slot].x2, self.slots[slot].y2, tol);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Searches for a bitmap in the inventory
+*)
+
+function SSinventory.searchBitmap(BMPSearch, tol:Integer;click, cont:Boolean):Boolean;
+var
+  i:Integer;
+begin
+  result := false;
+  for i := 0 to high(self.slots) do
+  begin
+    If self.bitmapExists(bmpSearch, i, tol) then
+    begin
+      result := true;
+      if click then
+        self.interactItem(i, left);
+      if not cont then
+        exit;
+    end;
+  end;
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Counts number of bitmaps in the inventory
+*)
+
+function SSinventory.countBitmap(bmpSearch, tol:Integer):Integer;
+var
+  i:Integer;
+begin
+  for i := 0 to high(self.slots) do
+    if (self.bitmapExists(bmpSearch, i, tol)) then
+      result := result + 1;
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns true if a DTM Exists in a slot
+*)
+
+function SSinventory.DTMExists(DTM, slot:integer):boolean;
+var
+  x, y:integer;
+begin
+  result := findDTM(DTM, x, y, self.slots[slot].X1, self.slots[slot].y1, self.slots[slot].x2, self.slots[slot].y2);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Counts number of DTMs in the inventory
+*)
+
+function SSinventory.countDTM(DTMSearch:Integer):Integer;
+var
+  i:Integer;
+begin
+  for i := 0 to high(self.slots) do
+    if (self.DTMExists(dtmSearch, i)) then
+      result := result + 1;
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Searches for a DTM in the inventory
+*)
+
+function SSinventory.searchDTM(DTMSearch:Integer;click, cont:Boolean;button:Integer):Boolean;
+var
+  i:Integer;
+begin
+  for i := 0 to high(self.slots) do
+  begin
+    if self.DTMExists(dtmSearch, i) then
+    begin
+      result := true;
+      if click then
+        self.interactItem(i, left);
+      if not cont then
+        exit;
+    end;
+  end;
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Searches for a DTM in the inventory, clicks by defualt
+*)
+
+function SSinventory.searchDTM(DTMSearch:Integer;cont:Boolean;button:Integer):Boolean; overload;
+var
+  I:Integer;
+begin
+  result := false;
+  for i := 0 to high(self.slots) do
+  begin
+    if self.DTMExists(dtmSearch, i) then
+    begin
+      result := true;
+      self.interactItem(i, left);
+      if not cont then
+        exit;
+    end;
+  end;
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Searches for a DTM in the inventory, clicks by defualt and exits
+*)
+
+function SSinventory.searchDTM(DTMSearch:Integer;button:Integer):Boolean; overload;
+var
+  I, x, y:Integer;
+begin
+  result := false;
+  for i := 0 to high(self.slots) do
+  begin
+    if self.DTMExists(dtmSearch, i) then
+    begin
+      self.interactItem(i, button);
+      exit(true);
+    end;
+  end;
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns amount of item in a slot
+*)
+
+function SSinventory.itemAmount(slot:integer):integer;
+begin
+  if (not gameTab(TAB_INV)) then
+    gameTab(TAB_INV);
+  result := getAmountBox(self.slots[slot]);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns total count of all items
+*)
+
+function SSinventory.totalItemAmount:Int64;
+var
+  i:integer;
+begin
+  if (not gameTab(TAB_INV)) then
+    gameTab(TAB_INV);
+  for i := 0 to 27 do
+    result := result + self.itemAmount(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns where in the inventory a dtm is
+*)
+
+function SSinventory.DTMPosition(model:integer):integer;
+var
+  i, x, y:integer;
+begin
+  if (not gameTab(TAB_INV)) then
+    gameTab(TAB_INV);
+  for i := 0 to 27 do
+    if self.DTMExists(model, i) then
+      exit(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns where in the inventory a bitmap is
+*)
+
+function SSinventory.DTMPositionMulti(DTM:integer):TIntegerArray;
+var
+  i, x, y:integer;
+begin
+  if (not gameTab(TAB_INV)) then
+    gameTab(TAB_INV);
+  for i := 0 to 27 do
+    if DTMExists(DTM, i) then
+      result.append(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns where in the inventory a bitmap is
+*)
+
+function SSinventory.DTMPositionMulti(DTM:TIntegerarray):TIntegerArray; overload;
+var
+  i, k:integer;
+begin
+  if (not gameTab(TAB_INV)) then
+    gameTab(TAB_INV);
+  for k := 0 to high(DTM) do
+    for i := 0 to 27 do
+      if DTMExists(DTM[k], i) then
+        result.append(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns where in the inventory a bitmap is
+*)
+
+function SSinventory.bitmapPosition(bmp, tol:integer):integer;
+var
+  i:integer;
+begin
+  if (not gameTab(TAB_INV)) then
+    gameTab(TAB_INV);
+  for i := 0 to 27 do
+    if self.bitmapExists(bmp, i, tol) then
+      exit(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns where in the inventory a bitmap is
+*)
+
+function SSinventory.bitmapPositionMulti(bmp, tol:integer):TIntegerArray;
+var
+  i:integer;
+begin
+  if (not gameTab(TAB_INV)) then
+    gameTab(TAB_INV);
+  for i := 0 to 27 do
+    if bitMapExists(bmp, i, tol) then
+      result.append(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns where in the inventory a bitmap is
+*)
+
+function SSinventory.bitmapPositionMulti(bmp, tol:TIntegerarray):TIntegerArray; overload;
+var
+  i, k:integer;
+begin
+  if (length(bmp) <> length(tol)) then
+    exit();
+  if (not gameTab(TAB_INV)) then
+    gameTab(TAB_INV);
+  for k := 0 to high(bmp) do
+    for i := 0 to 27 do
+      if bitMapExists(bmp[k], i, tol[k]) then
+        result.append(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Gets the name of an item in a slow
+*)
+
+function SSinventory.getItemName(slot:integer):string;
+var
+  p:TPoint;
+begin
+  if (not self.slotFull(slot)) then
+    exit('')
+  else
+  begin
+    p := boxCenter(self.slots[slot]);
+    mmouse(p.x, p.y, 0, 0);
+    result := getSimpleText([4231423], 7, 62, 255, 77, 'upchars07');
+  end;
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops item in a slot
+*)
+
+function SSinventory.dropItem(slot:integer):boolean;
+begin
+  if not self.slotFull(slot) then
+    exit(true)
+  else begin
+    SS.interactItem(slot, mouse_right);
+    exit(waitOption('rop', 200));
+  end;
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops all items
+*)
+
+function SSinventory.dropAll:boolean;
+var
+  i, c, k:integer;
+begin
+  c := self.count();
+  if (c = 0) then
+    exit(true);
+  for i := 0 to 27 do
+    if self.dropItem(i) then
+      k := k + 1;
+  exit(k = c);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops all items in a pattern
+*)
+
+function SSinventory.dropAll(pattern:TIntegerArray):boolean; overload;
+var
+  i, c, k:integer;
+begin
+  c := self.count();
+  if (c = 0) then
+    exit(true);
+  for i := 0 to high(pattern) do
+    if self.dropItem(i) then
+      k := k + 1;
+  exit(k = c);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops all items except slots
+*)
+
+procedure SSinventory.dropAllExcept(slots:TIntegerArray);
+var
+  i, k:integer;
+begin
+  for i := 0 to 27 do
+    for k := 0 to high(slots) do
+      if (i <> slots[k]) then
+        self.dropItem(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops all items that don't contain a uptext
+*)
+
+procedure SSinventory.dropAllButUptext(text:TStringArray);
+var
+  i:integer;
+begin
+  for i := 0 to 27 do
+    if self.slotFull(i) then
+    begin
+      self.mouseItem(i);
+      if not self.waitUpTextMulti(text, 120) then
+        self.dropItem(i);
+    end;
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops all items that are not a item
+*)
+
+procedure SSinventory.dropAllButBitmap(bmp, tol:integer);
+var
+  i:integer;
+begin
+  for i := 0 to 27 do
+    if not self.bitmapExists(bmp, i, tol) then
+      self.dropItem(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops all items that are not a item
+*)
+
+procedure SSinventory.dropAllButBitmap(bmp, tol:TIntegerArray);overload;
+var
+  i, k:integer;
+begin
+  if (length(bmp) <> length(tol)) then
+    exit();
+  for i := 0 to 27 do
+    for k := 0 to high(bmp) do
+      if not self.bitmapExists(bmp[k], i, tol[k]) then
+        self.dropItem(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops all items that are not a item
+*)
+
+procedure SSinventory.dropAllBitmap(bmp, tol:integer);
+var
+  i:integer;
+begin
+  for i := 0 to 27 do
+    if self.bitmapExists(bmp, i, tol) then
+      self.dropItem(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops all items that are not a item
+*)
+
+procedure SSinventory.dropBitmap(bmp, tol:TIntegerArray);overload;
+var
+  i, k:integer;
+begin
+  if (length(bmp) <> length(tol)) then
+    exit();
+  for i := 0 to 27 do
+    for k := 0 to high(bmp) do
+      if self.bitmapExists(bmp[k], i, tol[k]) then
+        self.dropItem(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops all items that are not a item DTM
+*)
+
+procedure SSinventory.dropAllButDTM(DTM:integer);
+var
+  i:integer;
+begin
+  for i := 0 to 27 do
+    if not self.DTMExists(DTM, i) then
+      self.dropItem(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops all items that are not a item DTM
+*)
+
+procedure SSinventory.dropAllButDTM(DTM:TIntegerArray);overload;
+var
+  i, k:integer;
+begin
+  for i := 0 to 27 do
+    for k := 0 to high(DTM) do
+      if not self.DTMExists(DTM[k], i) then
+        self.dropItem(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops all items that are not a item DTM
+*)
+
+procedure SSinventory.dropAllDTM(DTM:integer);
+var
+  i:integer;
+begin
+  for i := 0 to 27 do
+    if self.DTMExists(DTM, i) then
+      self.dropItem(i);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Drops all items that are not a item DTM
+*)
+
+procedure SSinventory.dropDTM(DTM:TIntegerArray);overload;
+var
+  i, k:integer;
+begin
+  for i := 0 to 27 do
+    for k := 0 to high(DTM) do
+      if self.DTMExists(DTM[k], i) then
+        self.dropItem(i);
+end;

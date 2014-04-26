@@ -1,0 +1,195 @@
+(*
+  File name: mainscreen.simba
+  Description: Contains functions that have to do with minimap stuff
+  Authors: Officer Barbrady
+*)
+
+type
+  SSminimap = record(rsps_interface)
+    center:TPoint;
+  end;
+
+var minimap:SSminimap;
+
+(*
+  Author: Officer Barbrady
+  Description: Gets health text from minimap
+*)
+
+function SSminimap.getHealth:integer;
+begin
+  result := self.getText(map.healthBox, [65280, 501500, 65535, 855541], self.fontName);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Gets prayer text from minimap
+*)
+
+function SSminimap.getPrayer:integer;
+begin
+  result := self.getText(map.prayerBox, [65280, 501500, 65535, 855541], self.fontName);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Gets run text from minimap
+*)
+
+function SSminimap.getRun:integer;
+begin
+  result := self.getText(map.runBox, [65280, 501500, 65535, 855541], self.fontName);
+end;
+
+(*
+  by Narcle & Flight
+  Description: Gets the compass angle in radians
+*)
+function SSminimap.getCompassRadians: Extended;
+var
+  TPA: TPointArray;
+  T: TPoint;
+  b:Tbox;
+begin
+  b := intToBox(521, 2, 563, 46);
+  with b do
+    FindColorsSpiralTolerance(T.x, T.y, TPA, 1911089, x1, y1, x2, y2, 0);
+  if Length(TPA) < 1 then
+   Exit;
+  T := MiddleTPA(TPA);
+  Result := ArcTan2(-(T.Y - 24), T.X - 543) + Radians(90);
+  Result := fixRad(Result - Pi);
+end;
+
+(*
+  by Wizzup?
+  Description: Gets the compass angle in radians
+*)
+
+function SSminimap.GetCompassAngleDegrees: Extended;
+begin
+  Result := Degrees(self.getCompassRadians());
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns true if run is on
+*)
+
+function SSminimap.runOn:boolean;
+begin
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns true if run is off
+*)
+
+function SSminimap.runOff:boolean;
+begin
+  result := not runOn;
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Turns run on or off
+*)
+
+procedure SSminimap.setRun(turnOn:boolean);
+begin
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Turns run on or off given the run is above a certain level
+*)
+
+procedure SSminimap.setRun(turnOn:boolean;energy:integer) overload;
+begin
+end;
+
+(*
+  by Zyt3x
+*)
+
+procedure TPointArray.addIndex(const p : TPoint; const index : Integer);
+var
+  I : Integer;
+begin
+  if not inRange(index, low(self), length(self)) then
+  begin
+    WriteLn('ERROR: addIndex: index larger than array length.');
+    Exit;
+  end;
+
+  setLength(self, length(self)+1);
+  for I := high(self)-1 downto index do
+    self[I+1] := self[I];
+  self[index] := p;
+end;
+
+(*
+  by Zyt3x
+*)
+
+procedure TPointArray.append(const p : TPoint);
+begin
+  self.addIndex(p, length(self));
+end;
+
+(*
+  Author:
+  Description:
+*)
+
+procedure SSminimap.toMainscreen;
+begin
+end;
+
+(*
+  Author: Nava2, Rasta Magicion
+  Description: Gets the dots on the minimap
+*)
+
+function SSminimap.getDots(WhatDot: String; x1, y1, x2, y2: Integer): TPointArray;
+var
+  I, Dif, Radius, Hi, C: Integer;
+  TPA: TPointArray;
+begin
+  case LowerCase(WhatDot) of
+    'npc', 'n', 'yellow', 'y': Dif := 4369;
+    'item', 'i', 'red', 'r': Dif := 29;
+    'player', 'p', 'white', 'w': Dif := 1907997;
+    'friend', 'f', 'green', 'g': Dif := 5376;
+    'team', 't', 'blue', 'b', 'cape': Dif := 2171941;
+    {'clan', 'c', 'orange', 'o': Dif := -1;}
+  else
+   writeln('');// srl_Warn('GetMiniMapDotsIn', '"' + WhatDot + '" is not a valid dot type', warn_AllVersions);
+  end;
+  Freeze;
+  Radius := Max((x2-x1)div 2, (y2-y1)div 2);
+  FindColorsPie(TPA, 65536, 0, 0, 360, 0, radius, x1, y1, x2, y2, (x1+x2)div 2, (y1+y2)div 2);
+  Hi := High(TPA);
+  SetLength(Result, Hi + 1);
+  if (Hi < 0) then
+  begin
+    UnFreeze;
+    Exit;
+  end;
+  C := 0;
+  for I := 0 to Hi do
+  begin
+    if (GetColor(TPA[I].X-1, TPA[I].Y-1) - GetColor(TPA[I].X, TPA[I].Y-1) = Dif) then
+    begin
+      Result[C] := Point(TPA[I].x, TPA[i].y - 2);
+      Inc(C);
+    end;
+  end;
+  Unfreeze;
+  SetLength(Result, C);
+end;
+
+
+
+
+

@@ -1,0 +1,131 @@
+type
+  TFile = record
+    path, name, extension, data, realPath:string;
+  end;
+
+function TFile.exists():boolean;
+var
+  s:TStringArray;
+  i:Integer;
+begin
+  s := GetFiles(self.path, self.extension);
+  for i := 0 to high(s) do
+    if (s[i] = (self.name +'.' + self.extension)) then
+      exit(true);
+end;
+
+procedure TFile.recall(const filePath, fileName, fileExtension:string);
+begin
+  self.path := path;
+  self.name := name;
+  self.extension := fileExtension;
+  self.realPath := filePath + fileName + '.' + fileExtension;
+end;
+
+function newFile(const filePath, fileName, fileExtension:string):TFile;
+begin
+  result.path := filePath;
+  result.name := fileName;
+  result.extension := fileExtension;
+  result.realPath := filePath + fileName + '.' + fileExtension;
+end;
+
+function TFile.open():integer;
+begin
+  result := openFile(self.realPath, true);
+end;
+
+function TFile.readString(const strLength:integer):string;
+var
+  tmpFile:integer;
+  str:string;
+begin
+  if (not self.exists()) then
+    exit('');
+  try
+    tmpFile := self.open();
+    ReadFileString(tmpFile, str, strLength);
+    closeFile(tmpFile);
+  except
+  finally
+    result := str;
+  end;
+end;
+
+function TFile.readString():string; overload;
+begin
+  result := self.readString(50000);
+end;
+
+function TFile.rewrite():integer;
+begin
+  try
+    result := rewriteFile(self.realPath, true);
+  except
+  end;
+end;
+
+function TFile.setText(const str:string):boolean;
+var
+  tmpFile:integer;
+begin
+  if (not self.exists()) then
+    exit();
+  try
+    tmpFile := self.rewrite();
+    writeFileString(tmpFile, str);
+    closeFile(tmpFile);
+  except
+  end;
+end;
+
+function TFile.parseData(const str1, str2:string):string;
+var
+  str:string;
+begin
+  result := between(str1, str2, self.readString());
+end;
+
+function TFile.delete():boolean;
+begin
+  result := deleteFile(self.realPath);
+end;
+
+procedure TFile.create(const filePath, fileName, fileExtension, writeData:string;overwrite:boolean);
+var
+  tmpFile:integer;
+begin
+  if (not overwrite) and (self.exists()) then
+  begin
+    self.recall(filePath, fileName, fileExtension);
+    exit();
+  end;
+  try
+    self.path := filePath;
+    self.name := fileName;
+    self.extension := fileExtension;
+    self.realPath := filePath + fileName + '.' + fileExtension;
+    tmpFile := createFile(self.realPath);
+    closeFile(tmpFile);
+    if self.setText(writeData) then
+      self.data := writeData;
+  except
+  end;
+end;
+
+procedure TFile.create(const thePath, writeData, fileExtension, thename:string); overload;
+var
+  tmpFile:integer;
+begin
+  try
+    self.realPath := thePath;
+    self.name := theName;
+    self.extension := fileExtension;
+    tmpFile := createFile(thePath);
+    closeFile(tmpFile);
+    if self.setText(writeData) then
+      self.data := writeData;
+  except
+  end;
+end;
+

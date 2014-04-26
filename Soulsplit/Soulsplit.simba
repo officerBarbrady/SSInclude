@@ -1,0 +1,85 @@
+{$include_once core/globals.simba}
+{$include_once core/inventory.simba}
+{$include_once core/login.simba}
+{$include_once core/math.simba}
+{$include_once core/mouse.simba}
+{$include_once core/text.simba}
+{$include_once core/timing.simba}
+{$include_once core/mainscreen.simba}
+{$include_once core/bank.simba}
+{$include_once core/chatbox.simba}
+{$include_once core/minimap.simba}
+{$include_once core/gametab.simba}
+{$include_once core/interface.simba}
+
+{$include_once misc/simba.simba}
+{$include_once misc/datatypes/types.simba}
+
+{$IFDEF SMART}
+  {$include_once core/smart/smart.simba}
+{$ENDIF}
+{$f+}
+
+
+const
+  curbuild = 0;
+
+
+function getLatest:integer;
+begin
+  try
+    result := StrToInt(getPage('http://pastebin.com/raw.php?i=dDBtZeE2'));
+  except
+    result := -1;
+  end;
+end;
+
+procedure checkUpdate();
+var
+  soulsplitUpdater:TUpdateSystem;
+  t:integer;
+begin
+  if (getLatest > curbuild) then
+  begin
+    t := getSystemTime();
+    writeln('Updating Include..');
+    soulsplitUpdater.init();
+    soulsplitUpdater.update();
+    writeln('Updated include in  ' , msToTime((GetSystemTime - t), 1);
+  end else
+end;
+
+procedure ActivateSoulsplit();
+var
+  processes: TSysProcArr;
+  i: integer;
+begin
+  processes := GetProcesses();
+  for i := 0 to high(processes) do
+    if lowercase(processes[i].title).contains('soulsplit') then
+    begin
+      if (processes[i].width = 765) and (processes[i].height = 564) then
+        continue;
+      setTarget(processes[i]);
+      ActivateClient();
+      writeln('Soulsplit client targeted');
+    end;
+end;
+
+procedure SetUpSoulsplitInclude(update:boolean); overload;
+var
+  t:integer;
+begin
+  t := getSystemTime();
+  activateClient('Soulsplit');
+  writeln('Soulsplit include compiled in ' , t,  ' ms');
+  if update then
+    checkUpdate();
+end;
+
+
+
+
+
+
+

@@ -1,0 +1,78 @@
+{$I Soulsplit/core/file.Simba}
+
+
+(*
+  Soulsplit include updater written by Robert
+*)
+
+
+
+type
+  TUpdateNode = record
+    link:string;
+    sourceFile:TFile;
+  end;
+
+  TUpdateSystem = array of TUpdateNode;
+
+var
+  soulsplitUpdater:TUpdateSystem;
+
+procedure TUpdateNode.create(f:Tfile;pageLink:string);
+begin
+  self.sourceFile := f;
+  self.link := pageLink;
+end;
+
+procedure TUpdateSystem.addNode(f:Tfile;pageLink:string);
+begin
+  setLength(self, length(self) + 1);
+  self[length(self) - 1].create(f, pageLink);
+end;
+
+procedure TUpdateSystem.init;
+var
+  FNA, PA:TStringArray;
+  i:integer;
+begin
+  self.addNode(newFile(appPath + 'Includes\Soulsplit\', 'Soulsplit', 'simba'), 'http://pastebin.com/raw.php?i=wbJqtXSY');
+
+  FNA := ['bank','chatbox','directory','file','gametab','globals','interface',
+  'inventory','login','mainscreen','math','minimap','mouse','prayer',
+  'text','timing','dtm']
+  for i := 0 to high(FNA) do
+    self.addNode(newFile(appPath + 'Includes\Soulsplit\core', FNA[i], 'simba'), PA[i]);
+
+  self.addNode(newFile(appPath + 'Includes\Soulsplit\misc', 'debug', 'simba'), PA[i]);
+  self.addNode(newFile(appPath + 'Includes\Soulsplit\misc', 'simba', 'simba'), PA[i]);
+
+  FNA := ['extended','extendedarrays','integer','integerarrays','string',
+  'stringarrays','t2dstringarray','tbox','tpoint','tpointarrays',
+  'tstringarrays','typemath','types']
+  for i := 0 to high(FNA) do
+    self.addNode(newFile(appPath + 'Includes\Soulsplit\misc\datatypes', FNA[i], 'simba'), PA[i]);
+end;
+
+procedure TUpdateSystem.update;
+var
+  i:integer;
+  f:TFile;
+  p:string;
+begin
+  for i := 0 to high(self) do
+  begin
+    p := getPage(self[i].link);
+    if (length(p) <> length(self[i].sourceFile.readString())) then
+    begin
+      writeln('Updating file ' , self[i].sourceFile.realPath);
+      f.create(self[i].sourceFile.Path, self[i].sourceFile.name, 'simba', p, true);
+    end;
+  end;
+end;
+
+begin
+  soulsplitUpdater.init();
+  soulsplitUpdater.update();
+end.
+
+

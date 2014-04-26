@@ -1,0 +1,90 @@
+ (*
+  File name: interface.simba
+  Description: Contains functions for interfaces
+  Authors: Officer Barbrady
+*)
+
+
+(*
+  Author: Officer Barbrady
+  Description: Gets interface TPA
+*)
+
+var
+  ssMSInterface:ssInterface;
+
+function ssInterface.getTPA:TPointArray;
+begin
+  findColorsTolerance(result, 3358536, mainscreen.bounds, 3);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Gets open interface bounds
+*)
+
+function ssInterface.getBounds:TBox;
+begin
+  result := getTPABounds(self.getTPA);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns true if interface is open
+*)
+
+function ssInterface.open:boolean;
+begin
+  result := (length(self.getTPA) > 1000);
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Gets name of interface
+*)
+
+function ssInterface.getName:string;
+var
+  b:TBox;
+begin
+  if (not self.open) then
+    exit;
+  b := _self.getBounds();
+  b.y2 := b.y1 + 40;
+  result := getSimpleText([2070783, 37375, 65535], b.x1, b.y1, b.x2, b.y2, 'upchars07');
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Gets interface description
+*)
+
+function ssInterface.getDescription:string;
+var
+  b:TBox;
+begin
+  if (not self.open) then
+    exit;
+  b := _self.getBounds();
+  b.y1 := b.y1 + 80;
+  result := getSimpleText([2070783], b.x1, b.y1, b.x2, b.y2, 'smallchars07');
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Closes interface
+*)
+
+procedure ssInterface.close;
+var
+  b:TBox;
+  text:string;
+begin
+  if (not self.open) then
+    exit;
+  b := _self.getBounds();
+  mouse(b.x2 - 15, b.y1 + 5);
+end;
+
+
+

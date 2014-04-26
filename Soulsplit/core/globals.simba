@@ -1,0 +1,54 @@
+(*
+  File name: globals.simba
+  Description: Contains globals for the include
+  Authors: Robert
+*)
+
+
+const
+  clRed = 255;
+  clPurple = 69;
+  mouse_move = 3;
+  VK_ENTER = {$IFDEF LINUX}10{$ELSE}VK_RETURN{$ENDIF};
+  TAB_COMBAT = 1;
+  TAB_STATS = 2;
+  TAB_QUEST = 3;
+  TAB_INV = 4;
+  TAB_EQUIP = 5;
+  TAB_PRAYER = 6;
+  TAB_MAGIC = 7;
+  TAB_SUM = 8;
+  TAB_FRIENDS = 9;
+  TAB_IGNORE = 10;
+  TAB_CLAN = 11;
+  TAB_TOOLS = 12;
+  TAB_EMOTE = 13;
+  TAB_MUSIC = 14;
+
+
+
+type
+  TOptions = record
+    Str: string;
+    Bounds, BigBox: TBox;
+  end;
+
+  chatOption = record
+    text: string;
+    bounds: TBox;
+  end;
+
+  ssInterface = record
+    name:string;
+    close:TPoint;
+    bounds:TBox;
+  end;
+
+  fnct_actionOptions = (ClickRight, ClickLeft, ClickMiddle, Move, Nothing);
+
+var
+  ms:TBox;
+  mouseSpeed:Integer;
+  right:Integer = 0;
+  left:Integer = 1;
+  username, password, tt:string;

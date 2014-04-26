@@ -1,0 +1,41 @@
+{$include_once interface.simba}
+//{$include_once misc/datatypes/string.simba}
+{$include_once RSPS/misc/datatypes/string.Simba}
+
+(*
+  File name: Bank.simba
+  Description: Bank functions
+  Authors: Officer Barbrady
+*)
+
+type
+  SSBankScreen = record(SSInterface)
+end;
+
+
+var
+  bankScreen:SSBankScreen;
+
+(*
+  Author: Officer Barbrady
+  Description: Returns true if interface text contains "ank of"
+*)
+
+function SSBankScreen.open:boolean;
+var
+  f:string;
+begin
+  f := ssMSInterface.getName();
+  result := (f.contains('ank of'));
+end;
+
+(*
+  Author: Officer Barbrady
+  Description: Closes bank, just calls closeInterface called close bank
+  for naming purposes (and old timers)
+*)
+
+procedure SSBankScreen.close();
+begin
+  ssMSInterface.close();
+end;
