@@ -15,7 +15,7 @@ var
 
 function ssInterface.getTPA:TPointArray;
 begin
-  findColorsTolerance(result, 3358536, mainscreen.bounds, 3);
+  findColorsTolerance(result, 3358280, mainscreen.bounds, 3);
 end;
 
 (*
@@ -33,7 +33,7 @@ end;
   Description: Returns true if interface is open
 *)
 
-function ssInterface.open:boolean;
+function ssInterface.isOpen:boolean;
 begin
   result := (length(self.getTPA) > 1000);
 end;
@@ -47,9 +47,9 @@ function ssInterface.getName:string;
 var
   b:TBox;
 begin
-  if (not self.open) then
+  if (not self.isOpen) then
     exit;
-  b := _self.getBounds();
+  b := self.getBounds();
   b.y2 := b.y1 + 40;
   result := getSimpleText([2070783, 37375, 65535], b.x1, b.y1, b.x2, b.y2, 'upchars07');
 end;
@@ -63,9 +63,9 @@ function ssInterface.getDescription:string;
 var
   b:TBox;
 begin
-  if (not self.open) then
+  if (not self.isOpen) then
     exit;
-  b := _self.getBounds();
+  b := self.getBounds();
   b.y1 := b.y1 + 80;
   result := getSimpleText([2070783], b.x1, b.y1, b.x2, b.y2, 'smallchars07');
 end;
@@ -80,10 +80,10 @@ var
   b:TBox;
   text:string;
 begin
-  if (not self.open) then
+  if (not self.isOpen) then
     exit;
-  b := _self.getBounds();
-  mouse(b.x2 - 15, b.y1 + 5);
+  b := self.getBounds();
+  mouse(b.x2 - 15, b.y1 + 30);
 end;
 
 

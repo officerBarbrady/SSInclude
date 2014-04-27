@@ -5,7 +5,7 @@
 *)
 
 type
-  SSminimap = record(rsps_interface)
+  SSminimap = record(SSinterface)
     center:TPoint;
   end;
 
@@ -18,7 +18,11 @@ var minimap:SSminimap;
 
 function SSminimap.getHealth:integer;
 begin
-  result := getSimpleText([65280, 501500, 65535, 855541], 0, 0, 0, 0, 'statchats07');
+  try
+    result := StrToInt(getSimpleText([65280, 501500, 65535, 855541], 721, 84, 737, 96, 'statchars07'));
+  except
+    result := -1;
+  end;
 end;
 
 (*
@@ -28,7 +32,11 @@ end;
 
 function SSminimap.getPrayer:integer;
 begin
-  result := getSimpleText([65280, 501500, 65535, 855541], 0, 0, 0, 0, 'statchats07');
+  try
+    result := StrToInt(getSimpleText([65280, 501500, 65535, 855541], 736, 123, 751, 135, 'statchars07'));
+  except
+    result := -1;
+  end;
 end;
 
 (*
@@ -38,7 +46,11 @@ end;
 
 function SSminimap.getRun:integer;
 begin
-  result := getSimpleText([65280, 501500, 65535, 855541], 0, 0, 0, 0, 'statchats07');
+  try
+    result := StrToInt(getSimpleText([65280, 501500, 65535, 855541], 734, 161, 753, 174, 'statchars07'));
+  except
+    result := -1;
+  end;
 end;
 
 (*
@@ -77,7 +89,10 @@ end;
 *)
 
 function SSminimap.runOn:boolean;
+var
+  x, y:integer;
 begin
+  result := findColorTolerance(x, y, 514811, 710, 157, 727, 172, 5);
 end;
 
 (*
@@ -97,6 +112,13 @@ end;
 
 procedure SSminimap.setRun(turnOn:boolean);
 begin
+  if turnOn then
+  begin
+    if self.runOff then
+      mouse(720, 165);
+  end else
+    if self.runOn then
+      mouse(720, 165);
 end;
 
 (*
@@ -106,6 +128,8 @@ end;
 
 procedure SSminimap.setRun(turnOn:boolean;energy:integer) overload;
 begin
+  if (self.getRun() >= energy) then
+    self.setRun(turnOn);
 end;
 
 procedure SSminimap.toMainscreen;

@@ -5,7 +5,7 @@
 *)
 
 //{$include_once text.simba}
-{$I Soulsplit/core/text.Simba}
+//{$I Soulsplit/core/text.Simba}
 
 const
   Time_Formal = 0;

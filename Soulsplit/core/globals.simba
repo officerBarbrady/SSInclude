@@ -13,17 +13,19 @@ const
   TAB_COMBAT = 1;
   TAB_STATS = 2;
   TAB_QUEST = 3;
-  TAB_INV = 4;
-  TAB_EQUIP = 5;
-  TAB_PRAYER = 6;
-  TAB_MAGIC = 7;
-  TAB_SUM = 8;
-  TAB_FRIENDS = 9;
-  TAB_IGNORE = 10;
-  TAB_CLAN = 11;
-  TAB_TOOLS = 12;
-  TAB_EMOTE = 13;
-  TAB_MUSIC = 14;
+  TAB_NOTHING = 4;
+  TAB_INV = 5;
+  TAB_EQUIP = 6;
+  TAB_PRAYER = 7;
+  TAB_MAGIC = 8;
+  TAB_SUM = 9;
+  TAB_FRIENDS = 10;
+  TAB_IGNORE = 11;
+  TAB_CLAN = 12;
+  TAB_TOOLS = 13;
+  TAB_EMOTE = 14;
+  TAB_MUSIC = 15;
+  TAB_NOTHING2 = 16;
 
 
 
@@ -40,7 +42,7 @@ type
 
   ssInterface = record
     name:string;
-    close:TPoint;
+   // close:TPoint;
     bounds:TBox;
   end;
 

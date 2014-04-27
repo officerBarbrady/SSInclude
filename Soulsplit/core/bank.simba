@@ -10,6 +10,7 @@
 
 type
   SSBankScreen = record(SSInterface)
+    ist:string;
 end;
 
 
@@ -37,5 +38,9 @@ end;
 
 procedure SSBankScreen.close();
 begin
-  ssMSInterface.close();
+  ssMSInterface.close;
+end;
+
+function SSBankScreen.withdraw(const row, column:integer):boolean;
+begin
 end;

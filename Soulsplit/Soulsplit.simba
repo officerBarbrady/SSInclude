@@ -15,10 +15,7 @@
 {$include_once misc/simba.simba}
 {$include_once misc/datatypes/types.simba}
 
-{$IFDEF SMART}
-  {$include_once core/smart/smart.simba}
-{$ENDIF}
-{$f+}
+//{$include_once updater.simba}
 
 
 const
@@ -33,7 +30,7 @@ begin
     result := -1;
   end;
 end;
-
+       {
 procedure checkUpdate();
 var
   soulsplitUpdater:TUpdateSystem;
@@ -47,22 +44,25 @@ begin
     soulsplitUpdater.update();
     writeln('Updated include in  ' , msToTime((GetSystemTime - t), 1);
   end else
-end;
+end;   }
 
-procedure ActivateSoulsplit();
+function ActivateSoulsplit():boolean;
 var
   processes: TSysProcArr;
   i: integer;
 begin
   processes := GetProcesses();
+  writeln(processes);
   for i := 0 to high(processes) do
     if lowercase(processes[i].title).contains('soulsplit') then
     begin
-      if (processes[i].width = 765) and (processes[i].height = 564) then
+      if (processes[i].width = 765) and (processes[i].height = 578) then
         continue;
+      writeln(processes[i]);
       setTarget(processes[i]);
       ActivateClient();
       writeln('Soulsplit client targeted');
+      exit(true);
     end;
 end;
 
@@ -71,12 +71,14 @@ var
   t:integer;
 begin
   t := getSystemTime();
-  activateClient('Soulsplit');
+  mouseSpeed := 20;
+ // if (not ActivateSoulsplit()) then
+    //writeln('Soulsplit window not found, manually select!');
   inventory.init();
-  mainscreen.init();
-  writeln('Soulsplit include compiled in ' , t,  ' ms');
-  if update then
-    checkUpdate();
+  mainscreen.setup();
+  writeln('Soulsplit include compiled in ' , timeFromMark(t),  ' ms');
+  //if update then
+  //  checkUpdate();
 end;
 
 

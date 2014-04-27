@@ -5,9 +5,10 @@
   Authors: Officer Barbrady
 *)
 {$include_once soulsplit/misc/simba.simba}
+{$include_once soulsplit/misc/datatypes/string.simba}
 //{$I Soulsplit/misc/Simba.Simba}
 //{$I Soulsplit/misc/datatypes/string.Simba}
-{$I Soulsplit/core/mainscreen.Simba}
+//{$I Soulsplit/core/mainscreen.Simba}
 
 (*
   Author: Officer Barbrady
@@ -90,7 +91,7 @@ end;
   Description: Gets item amount within a box
 *)
 
-function Tbox.getAmount():integer;
+function TBox.getAmount():integer;
 var
   Colors:TIntegerArray;
   textTPA:TPointArray;
@@ -249,7 +250,7 @@ var
    B: TBox;
    i, H, x, R: Integer;
    T: TPoint;
-   Options: array of SSActionOptions;
+   Options: array of TOptions;
 begin
   Result := False;
   Options := getOptions();
@@ -304,7 +305,7 @@ end;
 
 function chooseOptionMulti(Txt: TStringArray): Boolean; overload;
 begin
-  Result := self.chooseOptionMulti(Txt, 'All', ClickLeft);
+  Result := chooseOptionMulti(Txt, 'All', ClickLeft);
 end;
 
 (*
@@ -314,7 +315,7 @@ end;
 
 function chooseOption(Txt, TextType: string): Boolean;
 begin
-  Result := self.chooseOptionMulti([Txt], TextType, ClickLeft);
+  Result := chooseOptionMulti([Txt], TextType, ClickLeft);
 end;
 
 (*
@@ -324,7 +325,7 @@ end;
 
 function chooseOption(Txt: String): Boolean; overload;
 begin
-  Result := self.chooseOptionMulti([Txt], 'All', ClickLeft);
+  Result := chooseOptionMulti([Txt], 'All', ClickLeft);
 end;
 
 (*

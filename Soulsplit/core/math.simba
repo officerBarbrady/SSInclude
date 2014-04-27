@@ -5,25 +5,6 @@
 *)
 
 (*
-  Author: Coh3n
-  Description: Offsets each point in the TPointArray by the point p.
-*)
-procedure TPointArray.offset(p: TPoint);
-begin
-  offsetTPA(self, p);
-end;
-
-(*
-  Author: Officer Barbrady
-  Description: Gets bounds of a TPA
-*)
-
-function TPointArray.getBounds:TBox;
-begin
-  exit(getTPABounds(self));
-end;
-
-(*
   Author: Olly
   Description: Free's an array of bitmaps.
 *)

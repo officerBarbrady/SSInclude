@@ -6,7 +6,7 @@
 *)
 
 {$include_once timing.simba}
-{$I Soulsplit/core/text.Simba}
+{$include_once text.Simba}
 
 type
   SSscreen = record(ssInterface)
@@ -25,6 +25,7 @@ var
 procedure SSscreen.setup();
 begin
   self.center := point(248, 182);
+  self.bounds := intToBox(4, 56, 516, 391);
 end;
 
 (*
@@ -71,7 +72,7 @@ begin
       if rightClick then
       begin
         Mouse(x, y, 0, 0, Mouse_right);
-        if chooseOption.waitOptionMulti(['ttack','tack'], 1200) then
+        if waitOptionMulti(['ttack','tack'], 1200) then
           exit(true);
       end else
       begin

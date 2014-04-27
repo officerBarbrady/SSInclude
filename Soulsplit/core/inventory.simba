@@ -1,5 +1,6 @@
 {$include_once mouse.simba}
 {$include_once gametab.simba}
+{$include_once timing.simba}
 
 (*
   File name: inventory.simba
@@ -97,7 +98,7 @@ end;
 
 procedure SSinventory.init();
 begin
-  self.slots := explodeBox(IntToBox(563, 214, 720, 460), 7, 4);
+  self.slots := explodeBox(IntToBox(563, 265, 719, 514), 7, 4);
   bounds := intToBox(563, 214, 720, 460);
 end;
 
@@ -111,7 +112,9 @@ end;
   Description: Checks if a slot in the inventory is full
 *)
 
-function SSinventory.slotFull(slot:Integer):Boolean;
+function SSinventory.slotFull(const slot:Integer):Boolean;
+var
+  x, y:integer;
 begin
   result := FindColor(x, y, 65536, self.slots[slot]);
 end;
@@ -146,9 +149,10 @@ end;
   Description: Interacts with an item in the inventory
 *)
 
-procedure SSinventory.interactItem(slot:Integer; Button:Integer);
+procedure SSinventory.interactItem(const slot, Button:Integer);
 begin
-  mouse(self.boxCenter(self.slots[slot]).x, self.boxCenter(self.slots[slot]).y, 0, 0, BUTTON);
+  if (self.slotFull(slot)) then
+    mouse(self.boxCenter(self.slots[slot]).x, self.boxCenter(self.slots[slot]).y, 0, 0, BUTTON);
 end;
 
 (*
@@ -156,9 +160,10 @@ end;
   Description: Interacts with an item in the inventory
 *)
 
-procedure SSinventory.mouseItem(slot:Integer);
+procedure SSinventory.mouseItem(const slot:Integer);
 begin
-  mmouse(self.boxCenter(self.slots[slot]).x, self.boxCenter(self.slots[slot]).y, 0, 0);
+  if (self.slotFull(slot)) then
+    mmouse(self.boxCenter(self.slots[slot]).x, self.boxCenter(self.slots[slot]).y, 0, 0);
 end;
 
 (*
@@ -166,7 +171,7 @@ end;
   Description: Returns true if a bitmap Exists in a slot
 *)
 
-function SSinventory.bitmapExists(bmp, slot, tol:integer):boolean;
+function SSinventory.bitmapExists(const bmp, slot, tol:integer):boolean;
 var
   x, y:integer;
 begin
@@ -178,7 +183,7 @@ end;
   Description: Searches for a bitmap in the inventory
 *)
 
-function SSinventory.searchBitmap(BMPSearch, tol:Integer;click, cont:Boolean):Boolean;
+function SSinventory.searchBitmap(const BMPSearch, tol:Integer;click, cont:Boolean):Boolean;
 var
   i:Integer;
 begin
@@ -201,7 +206,7 @@ end;
   Description: Counts number of bitmaps in the inventory
 *)
 
-function SSinventory.countBitmap(bmpSearch, tol:Integer):Integer;
+function SSinventory.countBitmap(const bmpSearch, tol:Integer):Integer;
 var
   i:Integer;
 begin
@@ -215,7 +220,7 @@ end;
   Description: Returns true if a DTM Exists in a slot
 *)
 
-function SSinventory.DTMExists(DTM, slot:integer):boolean;
+function SSinventory.DTMExists(const DTM, slot:integer):boolean;
 var
   x, y:integer;
 begin
@@ -227,7 +232,7 @@ end;
   Description: Counts number of DTMs in the inventory
 *)
 
-function SSinventory.countDTM(DTMSearch:Integer):Integer;
+function SSinventory.countDTM(const DTMSearch:Integer):Integer;
 var
   i:Integer;
 begin
@@ -241,7 +246,7 @@ end;
   Description: Searches for a DTM in the inventory
 *)
 
-function SSinventory.searchDTM(DTMSearch:Integer;click, cont:Boolean;button:Integer):Boolean;
+function SSinventory.searchDTM(const DTMSearch:Integer;click, cont:Boolean;button:Integer):Boolean;
 var
   i:Integer;
 begin
@@ -263,7 +268,7 @@ end;
   Description: Searches for a DTM in the inventory, clicks by defualt
 *)
 
-function SSinventory.searchDTM(DTMSearch:Integer;cont:Boolean;button:Integer):Boolean; overload;
+function SSinventory.searchDTM(const DTMSearch:Integer;cont:Boolean;button:Integer):Boolean; overload;
 var
   I:Integer;
 begin
@@ -285,7 +290,7 @@ end;
   Description: Searches for a DTM in the inventory, clicks by defualt and exits
 *)
 
-function SSinventory.searchDTM(DTMSearch:Integer;button:Integer):Boolean; overload;
+function SSinventory.searchDTM(const DTMSearch:Integer;button:Integer):Boolean; overload;
 var
   I, x, y:Integer;
 begin
@@ -305,11 +310,10 @@ end;
   Description: Returns amount of item in a slot
 *)
 
-function SSinventory.itemAmount(slot:integer):integer;
+function SSinventory.itemAmount(const slot:integer):integer;
 begin
-  if (not gameTab(TAB_INV)) then
-    gameTab(TAB_INV);
-  result := getAmountBox(self.slots[slot]);
+  gameTab.open(TAB_INV);
+  result := self.slots[slot].getAmount;
 end;
 
 (*
@@ -321,8 +325,7 @@ function SSinventory.totalItemAmount:Int64;
 var
   i:integer;
 begin
-  if (not gameTab(TAB_INV)) then
-    gameTab(TAB_INV);
+  gameTab.open(TAB_INV);
   for i := 0 to 27 do
     result := result + self.itemAmount(i);
 end;
@@ -332,12 +335,11 @@ end;
   Description: Returns where in the inventory a dtm is
 *)
 
-function SSinventory.DTMPosition(model:integer):integer;
+function SSinventory.DTMPosition(const model:integer):integer;
 var
   i, x, y:integer;
 begin
-  if (not gameTab(TAB_INV)) then
-    gameTab(TAB_INV);
+  gameTab.open(TAB_INV);
   for i := 0 to 27 do
     if self.DTMExists(model, i) then
       exit(i);
@@ -348,12 +350,11 @@ end;
   Description: Returns where in the inventory a bitmap is
 *)
 
-function SSinventory.DTMPositionMulti(DTM:integer):TIntegerArray;
+function SSinventory.DTMPositionMulti(const DTM:integer):TIntegerArray;
 var
   i, x, y:integer;
 begin
-  if (not gameTab(TAB_INV)) then
-    gameTab(TAB_INV);
+  gameTab.open(TAB_INV);
   for i := 0 to 27 do
     if DTMExists(DTM, i) then
       result.append(i);
@@ -364,12 +365,11 @@ end;
   Description: Returns where in the inventory a bitmap is
 *)
 
-function SSinventory.DTMPositionMulti(DTM:TIntegerarray):TIntegerArray; overload;
+function SSinventory.DTMPositionMulti(const DTM:TIntegerarray):TIntegerArray; overload;
 var
   i, k:integer;
 begin
-  if (not gameTab(TAB_INV)) then
-    gameTab(TAB_INV);
+  gameTab.open(TAB_INV);
   for k := 0 to high(DTM) do
     for i := 0 to 27 do
       if DTMExists(DTM[k], i) then
@@ -381,12 +381,11 @@ end;
   Description: Returns where in the inventory a bitmap is
 *)
 
-function SSinventory.bitmapPosition(bmp, tol:integer):integer;
+function SSinventory.bitmapPosition(const bmp, tol:integer):integer;
 var
   i:integer;
 begin
-  if (not gameTab(TAB_INV)) then
-    gameTab(TAB_INV);
+  gameTab.open(TAB_INV);
   for i := 0 to 27 do
     if self.bitmapExists(bmp, i, tol) then
       exit(i);
@@ -397,12 +396,11 @@ end;
   Description: Returns where in the inventory a bitmap is
 *)
 
-function SSinventory.bitmapPositionMulti(bmp, tol:integer):TIntegerArray;
+function SSinventory.bitmapPositionMulti(const bmp, tol:integer):TIntegerArray;
 var
   i:integer;
 begin
-  if (not gameTab(TAB_INV)) then
-    gameTab(TAB_INV);
+  gameTab.open(TAB_INV);
   for i := 0 to 27 do
     if bitMapExists(bmp, i, tol) then
       result.append(i);
@@ -413,14 +411,13 @@ end;
   Description: Returns where in the inventory a bitmap is
 *)
 
-function SSinventory.bitmapPositionMulti(bmp, tol:TIntegerarray):TIntegerArray; overload;
+function SSinventory.bitmapPositionMulti(const bmp, tol:TIntegerarray):TIntegerArray; overload;
 var
   i, k:integer;
 begin
   if (length(bmp) <> length(tol)) then
     exit();
-  if (not gameTab(TAB_INV)) then
-    gameTab(TAB_INV);
+  gameTab.open(TAB_INV);
   for k := 0 to high(bmp) do
     for i := 0 to 27 do
       if bitMapExists(bmp[k], i, tol[k]) then
@@ -432,7 +429,7 @@ end;
   Description: Gets the name of an item in a slow
 *)
 
-function SSinventory.getItemName(slot:integer):string;
+function SSinventory.getItemName(const slot:integer):string;
 var
   p:TPoint;
 begin
@@ -451,12 +448,13 @@ end;
   Description: Drops item in a slot
 *)
 
-function SSinventory.dropItem(slot:integer):boolean;
+function SSinventory.dropItem(const slot:integer):boolean;
 begin
+  gameTab.open(TAB_INV);
   if not self.slotFull(slot) then
     exit(true)
   else begin
-    SS.interactItem(slot, mouse_right);
+    self.interactItem(slot, mouse_right);
     exit(waitOption('rop', 200));
   end;
 end;
@@ -484,7 +482,7 @@ end;
   Description: Drops all items in a pattern
 *)
 
-function SSinventory.dropAll(pattern:TIntegerArray):boolean; overload;
+function SSinventory.dropAll(const pattern:TIntegerArray):boolean; overload;
 var
   i, c, k:integer;
 begin
@@ -502,13 +500,13 @@ end;
   Description: Drops all items except slots
 *)
 
-procedure SSinventory.dropAllExcept(slots:TIntegerArray);
+procedure SSinventory.dropAllExcept(const invslots:TIntegerArray);
 var
   i, k:integer;
 begin
   for i := 0 to 27 do
-    for k := 0 to high(slots) do
-      if (i <> slots[k]) then
+    for k := 0 to high(invslots) do
+      if (i <> invslots[k]) then
         self.dropItem(i);
 end;
 
@@ -517,7 +515,7 @@ end;
   Description: Drops all items that don't contain a uptext
 *)
 
-procedure SSinventory.dropAllButUptext(text:TStringArray);
+procedure SSinventory.dropAllButUptext(const text:TStringArray);
 var
   i:integer;
 begin
@@ -525,7 +523,7 @@ begin
     if self.slotFull(i) then
     begin
       self.mouseItem(i);
-      if not self.waitUpTextMulti(text, 120) then
+      if (not waitUpTextMulti(text, 140)) then
         self.dropItem(i);
     end;
 end;
@@ -535,7 +533,7 @@ end;
   Description: Drops all items that are not a item
 *)
 
-procedure SSinventory.dropAllButBitmap(bmp, tol:integer);
+procedure SSinventory.dropAllButBitmap(const bmp, tol:integer);
 var
   i:integer;
 begin
@@ -549,7 +547,7 @@ end;
   Description: Drops all items that are not a item
 *)
 
-procedure SSinventory.dropAllButBitmap(bmp, tol:TIntegerArray);overload;
+procedure SSinventory.dropAllButBitmap(const bmp, tol:TIntegerArray);overload;
 var
   i, k:integer;
 begin
@@ -566,7 +564,7 @@ end;
   Description: Drops all items that are not a item
 *)
 
-procedure SSinventory.dropAllBitmap(bmp, tol:integer);
+procedure SSinventory.dropAllBitmap(const bmp, tol:integer);
 var
   i:integer;
 begin
@@ -580,7 +578,7 @@ end;
   Description: Drops all items that are not a item
 *)
 
-procedure SSinventory.dropBitmap(bmp, tol:TIntegerArray);overload;
+procedure SSinventory.dropBitmap(const bmp, tol:TIntegerArray);overload;
 var
   i, k:integer;
 begin
@@ -597,7 +595,7 @@ end;
   Description: Drops all items that are not a item DTM
 *)
 
-procedure SSinventory.dropAllButDTM(DTM:integer);
+procedure SSinventory.dropAllButDTM(const DTM:integer);
 var
   i:integer;
 begin
@@ -611,7 +609,7 @@ end;
   Description: Drops all items that are not a item DTM
 *)
 
-procedure SSinventory.dropAllButDTM(DTM:TIntegerArray);overload;
+procedure SSinventory.dropAllButDTM(const DTM:TIntegerArray);overload;
 var
   i, k:integer;
 begin
@@ -626,7 +624,7 @@ end;
   Description: Drops all items that are not a item DTM
 *)
 
-procedure SSinventory.dropAllDTM(DTM:integer);
+procedure SSinventory.dropAllDTM(const DTM:integer);
 var
   i:integer;
 begin
@@ -640,7 +638,7 @@ end;
   Description: Drops all items that are not a item DTM
 *)
 
-procedure SSinventory.dropDTM(DTM:TIntegerArray);overload;
+procedure SSinventory.dropDTM(const DTM:TIntegerArray);overload;
 var
   i, k:integer;
 begin
