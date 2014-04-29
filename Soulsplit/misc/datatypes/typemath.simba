@@ -6,7 +6,7 @@ This file stores math utility functions that don't quite fit in Simba or Lape.
 
 *)
 
-{$f-}
+//{$f-}
 
 (*
 var Math

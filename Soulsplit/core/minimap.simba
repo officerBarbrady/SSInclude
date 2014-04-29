@@ -11,12 +11,18 @@ type
 
 var minimap:SSminimap;
 
+
+procedure SSminimap.init();
+begin
+  self.bounds := intToBox(550, 62, 703, 215);
+end;
+
 (*
   Author: Officer Barbrady
   Description: Gets health text from minimap
 *)
 
-function SSminimap.getHealth:integer;
+function SSminimap.getHealth():integer;
 begin
   try
     result := StrToInt(getSimpleText([65280, 501500, 65535, 855541], 721, 84, 737, 96, 'statchars07'));
@@ -30,7 +36,7 @@ end;
   Description: Gets prayer text from minimap
 *)
 
-function SSminimap.getPrayer:integer;
+function SSminimap.getPrayer():integer;
 begin
   try
     result := StrToInt(getSimpleText([65280, 501500, 65535, 855541], 736, 123, 751, 135, 'statchars07'));
@@ -44,7 +50,7 @@ end;
   Description: Gets run text from minimap
 *)
 
-function SSminimap.getRun:integer;
+function SSminimap.getRun():integer;
 begin
   try
     result := StrToInt(getSimpleText([65280, 501500, 65535, 855541], 734, 161, 753, 174, 'statchars07'));
@@ -57,7 +63,7 @@ end;
   by Narcle & Flight
   Description: Gets the compass angle in radians
 *)
-function SSminimap.getCompassRadians: Extended;
+function SSminimap.getCompassRadians(): Extended;
 var
   TPA: TPointArray;
   T: TPoint;
@@ -78,7 +84,7 @@ end;
   Description: Gets the compass angle in radians
 *)
 
-function SSminimap.GetCompassAngleDegrees: Extended;
+function SSminimap.GetCompassAngleDegrees(): Extended;
 begin
   Result := Degrees(self.getCompassRadians());
 end;
@@ -88,7 +94,7 @@ end;
   Description: Returns true if run is on
 *)
 
-function SSminimap.runOn:boolean;
+function SSminimap.runOn():boolean;
 var
   x, y:integer;
 begin
@@ -100,9 +106,9 @@ end;
   Description: Returns true if run is off
 *)
 
-function SSminimap.runOff:boolean;
+function SSminimap.runOff():boolean;
 begin
-  result := not runOn;
+  result := not runOn();
 end;
 
 (*
@@ -114,10 +120,10 @@ procedure SSminimap.setRun(turnOn:boolean);
 begin
   if turnOn then
   begin
-    if self.runOff then
+    if self.runOff() then
       mouse(720, 165);
   end else
-    if self.runOn then
+    if self.runOn() then
       mouse(720, 165);
 end;
 
@@ -130,6 +136,34 @@ procedure SSminimap.setRun(turnOn:boolean;energy:integer) overload;
 begin
   if (self.getRun() >= energy) then
     self.setRun(turnOn);
+end;
+
+procedure SSminimap.rest(restUntil:integer);
+var
+  t:integer;
+begin
+  ssMSInterface.close();
+  if (self.getRun() >= restUntil) or (restUntil > 100) then
+    exit()
+  else begin
+    mouse(719, 164, 0, 0, mouse_right);
+    if waitOption('est', 1200) then
+    begin
+      markTime(t);
+      while (timeFromMark(t) < 30000) and (self.getRun() < restUntil) do
+        wait(random(1000));
+    end;
+  end;
+end;
+
+function TPoint.toMainscreen():TPoint;
+begin
+  result.x := Round((self.x-627)*259/23) + 269;
+  result.y := Round((self.y-129)*168/25) + 157;
+  if result.x < 3 then result.x := 3;
+  if result.y < 3 then result.y := 3;
+  if result.x > 516 then result.x := 516;
+  if result.y > 393 then result.y := 393;
 end;
 
 procedure SSminimap.toMainscreen;
@@ -177,6 +211,35 @@ begin
   end;
   Unfreeze;
   SetLength(Result, C);
+end;
+
+function flagPresent:boolean;
+var
+  flagDTM, x, y:integer;
+begin
+  flagDTM := DTMFromString('mQwAAAHicY2ZgYChiYmAoBuJ8IPYA8l0ZIPR/JCyAhBmRMBAAAOTzBWM=');
+  result := FindDTM(flagDTM, x, y, minimap.bounds.x1, minimap.bounds.y1, minimap.bounds.x2, minimap.bounds.y2);
+  freeDTM(flagDTM);
+end;
+
+procedure waitFlagPresent(time:integer);
+begin
+  waitFunc(@flagPresent(), 50, time);
+end;
+
+function flagGone():boolean;
+begin
+  result := not flagPresent();
+end;
+
+procedure flag(time:integer);
+begin
+  waitFunc(@flagGone, 50, 6000);
+end;
+
+procedure flag(); overload;
+begin
+  flag(4000);
 end;
 
 

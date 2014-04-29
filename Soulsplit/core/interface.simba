@@ -25,7 +25,7 @@ end;
 
 function ssInterface.getBounds:TBox;
 begin
-  result := getTPABounds(self.getTPA);
+  result := self.getTPA().getBounds();
 end;
 
 (*
@@ -35,7 +35,7 @@ end;
 
 function ssInterface.isOpen:boolean;
 begin
-  result := (length(self.getTPA) > 1000);
+  result := (length(self.getTPA()) > 1000);
 end;
 
 (*
@@ -47,7 +47,7 @@ function ssInterface.getName:string;
 var
   b:TBox;
 begin
-  if (not self.isOpen) then
+  if (not self.isOpen()) then
     exit;
   b := self.getBounds();
   b.y2 := b.y1 + 40;
@@ -63,7 +63,7 @@ function ssInterface.getDescription:string;
 var
   b:TBox;
 begin
-  if (not self.isOpen) then
+  if (not self.isOpen()) then
     exit;
   b := self.getBounds();
   b.y1 := b.y1 + 80;
@@ -80,7 +80,7 @@ var
   b:TBox;
   text:string;
 begin
-  if (not self.isOpen) then
+  if (not self.isOpen()) then
     exit;
   b := self.getBounds();
   mouse(b.x2 - 15, b.y1 + 30);

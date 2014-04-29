@@ -76,6 +76,7 @@ begin
     //writeln('Soulsplit window not found, manually select!');
   inventory.init();
   mainscreen.setup();
+  minimap.init();
   writeln('Soulsplit include compiled in ' , timeFromMark(t),  ' ms');
   //if update then
   //  checkUpdate();

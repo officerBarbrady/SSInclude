@@ -7,11 +7,20 @@
 
 {$include_once timing.simba}
 {$include_once text.Simba}
+{$include_once soulsplit/misc/datatypes/tpointarrays.simba}
 
 type
   SSscreen = record(ssInterface)
     center:TPoint;
     screen_name:string;
+  end;
+
+  msObject = record
+    colors, tols:TIntegerArray;
+    hues, sats:TExtendedArray;
+    rightClick, useUptext:boolean;
+    options, uptext:TStringArray;
+    minLength:integer;
   end;
 
 var
@@ -24,7 +33,7 @@ var
 
 procedure SSscreen.setup();
 begin
-  self.center := point(248, 182);
+  self.center := point(264, 225);
   self.bounds := intToBox(4, 56, 516, 391);
 end;
 
@@ -34,7 +43,7 @@ end;
   that can be different colors.
 *)
 
-function SSscreen.findObject(Colors, tols:TintegerArray;hue,sat:TExtendedArray;dist, minLength:integer;uptext:tstringarray;Useuptext,rightClick:boolean):boolean;
+function msObject.findObjectPoints():TPointArray;
 var
   mtpas, matpa:t2dpointarray;
   mtpa:tpointarray;
@@ -42,13 +51,13 @@ var
   bx:tbox;
   dx, dy, dx2, dy2:integer;
 begin
-  cts := GetColorToleranceSpeed;
+  cts := GetColorToleranceSpeed();
   ColorToleranceSpeed(2);
-  setLength(mtpas, length(colors));
-  for i := 0 to high(Colors) do
+  setLength(mtpas, length(self.colors));
+  for i := 0 to high(self.colors) do
   begin
-    SetColorSpeed2Modifiers(hue[i], sat[i]);
-    findColorsTolerance(mtpas[i], colors[i], self.bounds, tols[i]);
+    SetColorSpeed2Modifiers(self.hues[i], self.sats[i]);
+    findColorsTolerance(mtpas[i], self.colors[i], mainscreen.bounds, self.tols[i]);
   end;
   ColorToleranceSpeed(cts);
   SetColorSpeed2Modifiers(0.02, 0.02);
@@ -58,50 +67,61 @@ begin
     mtpa := mtpas[0];
   if (length(mtpa) > 0) then
   begin
-    matpa := clustertpa(mtpa, dist);
-    filtertpasbetween(matpa, 0, minLength);
+    matpa := clustertpa(mtpa, 5);
+    filtertpasbetween(matpa, 0, self.minLength);
     SortATPAFromFirstpoint(matpa, mainscreen.center);
+    setLength(result, length(matpa));
     for i := 0 to high(matpa) do
-    begin
-      if useUptext then
-        if (waitUpTextMulti(uptext, 150)) then
-          continue
-        else
-          writeln('Uptext ' , uptext, ' not found');
-      MiddleTPAEx(matpa[i], x, y);
-      if rightClick then
-      begin
-        Mouse(x, y, 0, 0, Mouse_right);
-        if waitOptionMulti(['ttack','tack'], 1200) then
-          exit(true);
-      end else
-      begin
-        mouse(x, y);
-        exit(true);
-      end;
-    end;
+      result[i] := matpa[i].getMiddle();
   end;
 end;
 
-(*
-  Author: Officer Barbrady
-  Description: Finds object on the mainscreen, 1 color
-*)
-
-function SSscreen.findObject(Color, tol:integer;hue,sat:Extended;dist, minLength:integer;uptext:tstringarray;Useuptext,rightClick:boolean):boolean; overload;
+function msObject.findClosest():TPoint;
+var
+  tpa:TpointArray;
 begin
-  result := self.findObject([color], [tol], [hue], [sat], dist, minLength, uptext, useUptext, rightClick);
+  tpa := self.findObjectPoints();
+  if (length(tpa) > 0) then
+    result := tpa[0];
 end;
 
-(*
-  Author: Officer Barbrady
-  Description: Finds object on the mainscreen, 1 color. Simplified version,
-  do not need to specify, distance, min length, or whether to right click
-*)
-
-function SSscreen.findObject(Color, tol:integer;hue,sat:Extended;uptext:tstringarray):boolean; overload;
+function msObject.find():boolean;
+var
+  tpa:TPointArray;
+  i:integer;
 begin
-  result := self.findObject([color], [tol], [hue], [sat], 3, 60, uptext, true, false);
+  tpa := self.findObjectPoints();
+  for i := 0 to high(tpa) do
+  begin
+    if self.useUptext then
+      if (waitUpTextMulti(self.uptext, 250)) then
+        continue
+      else
+        writeln('Uptext ' , uptext, ' not found');
+      if self.rightClick then
+      begin
+        tpa[i].click(mouse_right);
+        if waitOptionMulti(self.options, 1200) then
+          exit(true);
+      end else
+      begin
+        tpa[i].click();
+        exit(true);
+      end;
+   end;
+end;
+
+procedure msObject.new(cols, toles:TIntegerArray;huess, satss:TExtendedArray;rightClick2,useUptext2:boolean;uptext2,options2:TStringArray;filter2:integer);
+begin
+  self.colors := cols;
+  self.tols := toles;
+  self.hues := huess;
+  self.sats := satss;
+  self.rightClick := rightClick2;
+  self.useUptext := useUptext2;
+  self.options := options2;
+  self.uptext := uptext2;
+  self.minLength := filter2;
 end;
 
 (*
@@ -127,4 +147,5 @@ begin
     result[i] := getTextATPA(textATPA, 5, 'upchars07');
   end;
 end;
+
 

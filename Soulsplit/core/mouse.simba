@@ -288,3 +288,13 @@ begin
       Exit;
   end;
 end;
+
+procedure TPoint.click(button:integer);
+begin
+  mouse(self.x, self.y, 0, 0, button);
+end;
+
+procedure TPoint.click();overload;
+begin
+  mouse(self.x, self.y, 0, 0, mouse_left);
+end;

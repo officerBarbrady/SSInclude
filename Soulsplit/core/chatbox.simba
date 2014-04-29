@@ -121,7 +121,7 @@ var
   opt:array of chatOption;
   i:integer;
 begin
-  opt := self.getNpcText;
+  opt := self.getNpcText();
   for i := 0 to high(opt) do
     if (pos(text, opt[i].text) > 0) then
     begin

@@ -22,7 +22,7 @@ var
   Description: Returns true if interface text contains "ank of"
 *)
 
-function SSBankScreen.open:boolean;
+function SSBankScreen.open():boolean;
 var
   f:string;
 begin
@@ -41,6 +41,54 @@ begin
   ssMSInterface.close;
 end;
 
-function SSBankScreen.withdraw(const row, column:integer):boolean;
+function SSBankScreen.withdraw(const row, column:integer;amount:String):boolean;
 begin
+  mouse(45 + (column * 46), 119 + (row * 38), 0, 0, mouse_right);
+  waitOption(amount, 1200);
 end;
+
+procedure SSBankScreen.storeItemsExcept(slots:TIntegerArray);
+var
+  i, k:integer;
+begin
+  if (not loggedIn()) or (not self.open()) then
+    exit();
+  for i := 0 to high(inventory.slots) do
+    if (not slots.isInArray(i)) then
+      if (inventory.slotFull(i)) then
+        begin
+          if (not self.open()) then
+            exit();
+          inventory.interactItem(i, mouse_right);
+          if waitOptionMulti(['tore All','All','e All'], 300) then
+            wait(900 + random(500))
+          else
+            moveMouse(0, 0);
+        end;
+end;
+
+procedure SSBankScreen.depositItem(slot:integer);
+var
+  c, t:integer;
+begin
+  if (slot < 0) or (slot > 27) then
+    exit()
+  else begin
+    if (not inventory.slotFull(slot)) then
+      exit();
+    inventory.interactItem(slot, mouse_right);
+    waitOption('All', 600);
+    wait(450);
+  end;
+end;
+
+procedure SSBankscreen.deposit(fromSlot, toSlot:integer);
+var
+  i:integer;
+begin
+  if (fromSlot > toSlot) then
+    exit();
+  for i := fromSlot to toSlot do
+    self.depositItem(i);
+end;
+
