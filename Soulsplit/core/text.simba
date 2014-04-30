@@ -108,12 +108,16 @@ begin
   filtertpasbetween(textatpa, 0, 1);
   SortATPAFromFirstPointX(textATPA, Point(0, 0));
   textStr := getTextATPA(textATPA, 3, 'statchars07');
-  if textStr.contains('M') then
-    result := (StrToInt(textStr.removeEnd) * 1000000)
-  else if textStr.contains('K') then
-    result := (StrToInt(textStr.removeEnd) * 1000)
-  else
-    result := StrToInt(textStr);
+  try
+    if textStr.contains('M') then
+      result := (StrToInt(textStr.removeEnd) * 1000000)
+    else if textStr.contains('K') then
+      result := (StrToInt(textStr.removeEnd) * 1000)
+    else
+      result := StrToInt(textStr);
+  except
+    result := -1;
+  end;
 end;
 
 (*
