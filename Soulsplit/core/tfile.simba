@@ -35,6 +35,18 @@ begin
   result := openFile(self.realPath, true);
 end;
 
+function TFile.getSize():integer;
+var
+  tmpFile:integer;
+begin
+  try
+    tmpFile := self.open();
+    result := fileSize(tmpFile);
+    closeFile(tmpFile);
+  except
+  end;
+end;
+
 function TFile.readString(const strLength:integer):string;
 var
   tmpFile:integer;
@@ -54,7 +66,7 @@ end;
 
 function TFile.readString():string; overload;
 begin
-  result := self.readString(50000);
+  result := self.readString(self.getSize());
 end;
 
 function TFile.rewrite():integer;
@@ -128,4 +140,3 @@ begin
   except
   end;
 end;
-

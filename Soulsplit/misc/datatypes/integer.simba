@@ -1,0 +1,19 @@
+function integer.parse:string;
+begin
+  result := tostr(self);
+end;
+
+function integer.divide(d:integer):integer;
+begin
+  result := round(self/d);
+end;
+
+procedure integer.increase;
+begin
+  self := self + 1;
+end;
+
+procedure integer.increase(howMuch:integer); overload;
+begin
+  self := self + howMuch;
+end;
