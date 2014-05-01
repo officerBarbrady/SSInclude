@@ -1,4 +1,3 @@
-
 type
   TFile = record
     path, name, extension, data, realPath:string;
@@ -104,7 +103,7 @@ begin
   result := deleteFile(self.realPath);
 end;
 
-procedure TFile.create(const filePath, fileName, fileExtension, writeData:string;overwrite:boolean);
+function TFile.create(const filePath, fileName, fileExtension, writeData:string;overwrite:boolean):boolean;
 var
   tmpFile:integer;
 begin
@@ -122,11 +121,13 @@ begin
     closeFile(tmpFile);
     if self.setText(writeData) then
       self.data := writeData;
+    result := true;
   except
+    result := false;
   end;
 end;
 
-procedure TFile.create(const thePath, writeData, fileExtension, thename:string); overload;
+function TFile.create(const thePath, writeData, fileExtension, thename:string):boolean; overload;
 var
   tmpFile:integer;
 begin
@@ -138,6 +139,8 @@ begin
     closeFile(tmpFile);
     if self.setText(writeData) then
       self.data := writeData;
+    result := true;
   except
+    result := false;
   end;
 end;
