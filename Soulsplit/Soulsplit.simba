@@ -56,6 +56,8 @@ begin
       soulsplitUpdater.init();
       soulsplitUpdater.update();
       writeln('Updated include in  ' , msToTime((GetSystemTime - t), 2));
+      writeln('Please restart the script!');
+      terminateScript();
     end else
   end;
 end;

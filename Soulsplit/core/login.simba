@@ -52,5 +52,5 @@ end;       }
 
 function loggedIn:boolean;
 begin
-  result := (getColor(471, 491) = 16777215);
+  result := (getColor(439, 546) = 16777215);
 end;

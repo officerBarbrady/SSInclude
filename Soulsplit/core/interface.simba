@@ -15,7 +15,7 @@ var
 
 function ssInterface.getTPA:TPointArray;
 begin
-  findColorsTolerance(result, 3358280, mainscreen.bounds, 3);
+  findColorsTolerance(result, 3358536, mainscreen.bounds, 3);
 end;
 
 (*
