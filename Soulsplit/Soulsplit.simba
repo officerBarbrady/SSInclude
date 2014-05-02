@@ -19,7 +19,7 @@
 
 
 const
-  curbuild = 3;
+  curbuild = 4;
 
 
 function getLatest:integer;
