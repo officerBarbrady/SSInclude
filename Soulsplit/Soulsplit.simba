@@ -54,7 +54,7 @@ begin
       writeln('Updating Include..');
       soulsplitUpdater.init();
       soulsplitUpdater.update();
-      writeln('Updated include in  ' , msToTime((GetSystemTime - t), 1);
+      writeln('Updated include in  ' , msToTime((GetSystemTime - t), 1));
     end else
   end;
 end;
