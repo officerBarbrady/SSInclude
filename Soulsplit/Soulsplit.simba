@@ -28,7 +28,7 @@ var
 begin
   h.create('https://raw.githubusercontent.com/officerBarbrady/SSInclude/master/Soulsplit/Soulsplit.simba', 443);
   try
-    result := StrToInt(between('uild = ', ';', h.getPage());
+    result := StrToInt(between('uild = ', ';', h.getPage()));
   except
     result := -1;
   finally
