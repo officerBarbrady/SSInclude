@@ -19,7 +19,7 @@
 
 
 const
-  curbuild = 1;
+  curbuild = 2;
 
 
 function getLatest:integer;
@@ -48,10 +48,11 @@ begin
     exit();
   end else
   begin
-    if (getLatest > curbuild) then
+    if (lat > curbuild) then
     begin
       t := getSystemTime();
       writeln('Updating Include..');
+      writeln('Current: ' , curbuild , ' latest: ' , lat);
       soulsplitUpdater.init();
       soulsplitUpdater.update();
       writeln('Updated include in  ' , msToTime((GetSystemTime - t), 1));

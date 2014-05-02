@@ -91,3 +91,8 @@ begin
   for i := fromSlot to toSlot do
     self.depositItem(i);
 end;
+
+function testUpdate():boolean;
+begin
+  writeln('Hello world!');
+end;
