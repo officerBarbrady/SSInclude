@@ -146,5 +146,3 @@ begin
   if (Result) then
     FilterPointsPie(Points, StartD, EndD, MinR, MaxR, Mx, My);
 end;
-
-

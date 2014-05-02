@@ -625,4 +625,3 @@ function TPrayerArray.getActivatedCount():integer;
 begin
   result := length(self.getPrayerPointArray());
 end;
-

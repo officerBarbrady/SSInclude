@@ -879,9 +879,3 @@ begin
   end else
     Result := e;
 end;
-
-
-
-
-
-

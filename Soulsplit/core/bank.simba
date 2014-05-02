@@ -91,4 +91,3 @@ begin
   for i := fromSlot to toSlot do
     self.depositItem(i);
 end;
-

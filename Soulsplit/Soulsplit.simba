@@ -15,36 +15,49 @@
 {$include_once misc/simba.simba}
 {$include_once misc/datatypes/types.simba}
 
-//{$include_once updater.simba}
+{$include_once updater.simba}
 
 
 const
-  curbuild = 0;
+  curbuild = 1;
 
 
 function getLatest:integer;
+var
+  h:HTTPS;
 begin
+  h.create('https://raw.githubusercontent.com/officerBarbrady/SSInclude/master/Soulsplit/Soulsplit.simba', 443);
   try
-    result := StrToInt(getPage('http://pastebin.com/raw.php?i=dDBtZeE2'));
+    result := StrToInt(between('uild = ', ';', h.getPage());
   except
     result := -1;
+  finally
+    h.free();
   end;
 end;
-       {
+
 procedure checkUpdate();
 var
   soulsplitUpdater:TUpdateSystem;
-  t:integer;
+  t, lat:integer;
 begin
-  if (getLatest > curbuild) then
+  lat := getLatest();
+  if (lat = -1) then
   begin
-    t := getSystemTime();
-    writeln('Updating Include..');
-    soulsplitUpdater.init();
-    soulsplitUpdater.update();
-    writeln('Updated include in  ' , msToTime((GetSystemTime - t), 1);
+    writeln('Update server offline terminating update procedure');
+    exit();
   end else
-end;   }
+  begin
+    if (getLatest > curbuild) then
+    begin
+      t := getSystemTime();
+      writeln('Updating Include..');
+      soulsplitUpdater.init();
+      soulsplitUpdater.update();
+      writeln('Updated include in  ' , msToTime((GetSystemTime - t), 1);
+    end else
+  end;
+end;
 
 function ActivateSoulsplit():boolean;
 var
@@ -72,19 +85,10 @@ var
 begin
   t := getSystemTime();
   mouseSpeed := 20;
- // if (not ActivateSoulsplit()) then
-    //writeln('Soulsplit window not found, manually select!');
   inventory.init();
   mainscreen.setup();
   minimap.init();
   writeln('Soulsplit include compiled in ' , timeFromMark(t),  ' ms');
-  //if update then
-  //  checkUpdate();
+  if update then
+    checkUpdate();
 end;
-
-
-
-
-
-
-

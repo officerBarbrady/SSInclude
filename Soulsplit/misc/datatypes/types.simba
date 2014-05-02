@@ -16,5 +16,3 @@ The Type file includes all type editing functions used throughout SRL.
 {$include_once integer.simba}
 {$include_once string.simba}
 {$include_once t2dstringarray.simba}
-
-

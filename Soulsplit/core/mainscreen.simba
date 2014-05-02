@@ -147,5 +147,3 @@ begin
     result[i] := getTextATPA(textATPA, 5, 'upchars07');
   end;
 end;
-
-

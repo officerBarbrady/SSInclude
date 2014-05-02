@@ -1,4 +1,4 @@
- (*
+(*
   File name: interface.simba
   Description: Contains functions for interfaces
   Authors: Officer Barbrady
@@ -85,6 +85,3 @@ begin
   b := self.getBounds();
   mouse(b.x2 - 15, b.y1 + 30);
 end;
-
-
-

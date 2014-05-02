@@ -143,12 +143,3 @@ begin
     if self.clickNpcText(text[i]) then
       exit(true);
 end;
-
-
-
-
-
-
-
-
-
